@@ -13,7 +13,7 @@ InvestigaIA é um jogo de detetive interativo em console, onde personagens são 
 2. **Clone o repositório:**
 
    ```sh
-   git clone <url-do-repositorio>
+   git clone https://github.com/RaphaelLuizPH/Projeto-Sistemas-Operacionais-IA.git
    cd "Projeto Sistemas Operacionais IA/InvestigaIA"
    ```
 
@@ -29,7 +29,7 @@ InvestigaIA é um jogo de detetive interativo em console, onde personagens são 
    }
    ```
 
-   > **Importante:** Substitua `SUA_CHAVE_DE_API_AQUI` pela sua chave de API válida.
+   > **Importante:** Substitua `SUA_CHAVE_DE_API_AQUI` pela sua chave de API válida. [Consiga uma aqui](https://aistudio.google.com/welcome?utm_source=google&utm_medium=cpc&utm_campaign=FY25-global-DR-gsem-BKWS-1710442&utm_content=text-ad-none-any-DEV_c-CRE_726176647106-ADGP_Hybrid%20%7C%20BKWS%20-%20EXA%20%7C%20Txt-Gemini-Gemini%20API%20Key-KWID_43700081658555794-kwd-2337564139625&utm_term=KW_gemini%20api%20key-ST_gemini%20api%20key&gclsrc=aw.ds&gad_source=1&gad_campaignid=21026872772&gclid=Cj0KCQjwotDBBhCQARIsAG5pinPW_SVFYd6jm6U5NTpMqJJzM0DblJxq6kI6y9MT_tQcGMPwcAzcjukaAmxhEALw_wcB).
 
 4. **Garanta que o arquivo `appsettings.json` será copiado para a pasta de saída:**
 
