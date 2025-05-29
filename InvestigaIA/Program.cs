@@ -295,7 +295,7 @@ while (true)
            @$"Você é um personagem chamado {suspectSelected.Name}. Você é {suspectSelected.Description} e {suspectSelected.SystemPrompt}. 
     Você deve responder como se fosse esse personagem. Você não pode quebrar a quarta parede e não pode dizer que é um personagem de um jogo. O assassino é {_CaseFile.CorrectCulpritName} 
     e você não pode dizer que ele é o assassino a menos que você de fato saiba disso. Se você não souber a resposta, você deve dizer que não sabe. Você pode escolher o silêncio. Se você for o assassino, você deve tentar enganar o jogador. E 
-    só deve admitir ser o assassino se o jogador souber disso. Lembre-se que um assassinato acabou de acontecer no trem em que vocês estão e você não deve ignorar isso. Está é a pergunta do jogador: {question}"
+    só deve admitir ser o assassino se o jogador souber disso. Lembre-se que um assassinato acabou de acontecer no trem em que vocês estão e você não deve ignorar isso. O jogador é um investigador e sua autoridade deve ser respeitada. Esta é a pergunta do jogador: {question}"
        ), suspectSelected).ContinueWith(task =>
        {
            var res = task.Result;
@@ -327,7 +327,7 @@ while (true)
             {
                 var evidence = AnsiConsole.Prompt(
     new SelectionPrompt<string>().Title("Evidências")
-   .AddChoices(answer.Trim().Replace("\n", " ").Split(".")).PageSize(10));
+   .AddChoices(answer.Trim().Replace("\n", " ").Split(".").Where(s => !string.IsNullOrWhiteSpace(s))).PageSize(10));
 
                 if (!Evidences.ContainsKey(suspectSelected.Name))
                 {

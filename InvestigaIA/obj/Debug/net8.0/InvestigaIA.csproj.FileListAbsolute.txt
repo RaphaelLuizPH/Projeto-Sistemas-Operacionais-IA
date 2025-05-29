@@ -30,3 +30,5 @@ F:\Code\Projeto Sistemas Operacionais IA\InvestigaIA\bin\Debug\net8.0\System.Tex
 F:\Code\Projeto Sistemas Operacionais IA\InvestigaIA\bin\Debug\net8.0\System.Text.Json.dll
 F:\Code\Projeto Sistemas Operacionais IA\InvestigaIA\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 F:\Code\Projeto Sistemas Operacionais IA\InvestigaIA\bin\Debug\net8.0\appsettings.json
+F:\Code\Projeto Sistemas Operacionais IA\InvestigaIA\obj\Debug\net8.0\InvestigaIA.sourcelink.json
+F:\Code\Projeto Sistemas Operacionais IA\InvestigaIA\bin\Debug\net8.0\Newtonsoft.Json.dll

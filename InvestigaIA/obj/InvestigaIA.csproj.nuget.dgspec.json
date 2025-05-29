@@ -58,6 +58,10 @@
               "target": "Package",
               "version": "[9.0.5, )"
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
             "Spectre.Console": {
               "target": "Package",
               "version": "[0.49.1, )"
