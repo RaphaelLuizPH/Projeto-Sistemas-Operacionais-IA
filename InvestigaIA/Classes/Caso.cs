@@ -63,23 +63,6 @@ namespace TheInterrogatorAIDetective.Models
         /// <summary>
         /// Displays the case file details in an attractive format using Spectre.Console.Panel.
         /// </summary>
-        public void Display()
-        {
-
-
-            var panelContent = new Padder(new Markup(
-                $"[bold yellow u]Vitima:[/] {Markup.Escape(Victim)}\n\n"
-            )).Padding(1, 0, 1, 0); // Left, Top, Right, Bottom padding within the panel
-
-            var panel = new Panel(panelContent)
-            {
-                Header = new PanelHeader($"[white bold underline]Nome: {Markup.Escape(Title)}[/]", Justify.Center),
-                Border = BoxBorder.Double,
-                Padding = new Padding(2, 1, 2, 1), // Padding around the panel itself
-                Expand = true // Allows panel to expand to available width
-            };
-            AnsiConsole.Write(panel);
-            AnsiConsole.WriteLine(); // Add a newline for spacing after the panel
-        }
+      
     }
 }

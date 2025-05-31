@@ -17,7 +17,7 @@ string apiUrl = config["APIUrl"];
 
 GeminiService GeminiClient = new GeminiService(
     APIKey: apiKey,
-    APIUrl: apiUrl
+    HttpClient: new HttpClient { BaseAddress = new Uri(apiUrl) }
 );
 
 Random random1 = new();
@@ -64,7 +64,7 @@ bool isQuestioning = false;
 
 
 
-_CaseFile.Display();
+
 // Create the layout
 var layout = new Layout("Root")
     .SplitColumns(
@@ -135,15 +135,7 @@ Thread stresser = new Thread(() =>
             }
         }
 
-        layout["Left"].Update(
-    new Panel(
-        Align.Center(
-            new BarChart().Width(60)
-    .Label("[green bold underline]Nivel de estresse[/]")
-    .CenterLabel()
-    .AddItems(suspects),
-            VerticalAlignment.Middle))
-        .Expand());
+
     }
 });
 
@@ -152,15 +144,7 @@ timer.Start();
 
 
 
-layout["Left"].Update(
-    new Panel(
-        Align.Center(
-            new BarChart().Width(60)
-    .Label("[green bold underline]Nivel de estresse[/]")
-    .CenterLabel()
-    .AddItems(suspects),
-            VerticalAlignment.Middle))
-        .Expand());
+
 
 
 
@@ -177,15 +161,6 @@ var suspect = string.Empty;
 while (true)
 {
 
-    layout["Left"].Update(
-    new Panel(
-        Align.Center(
-            new BarChart().Width(60)
-    .Label("[green bold underline]Nivel de estresse[/]")
-    .CenterLabel()
-    .AddItems(suspects),
-            VerticalAlignment.Middle))
-        .Expand());
 
 
 
