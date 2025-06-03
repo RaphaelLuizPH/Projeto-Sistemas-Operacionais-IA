@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Spectre.Console;
 
@@ -9,6 +10,7 @@ using Spectre.Console;
 namespace InvestigaIA.Classes
 {
     // SuspectProfile.cs
+
     public class Suspeito
     {
         public string Name { get; set; }
@@ -16,7 +18,10 @@ namespace InvestigaIA.Classes
         public string SystemPrompt { get; set; }
 
         public string ImageCode { get; set; }
-        public List<Content> _conversationHistory = new List<Content>();
+
+        [JsonInclude]
+        [JsonPropertyName("conversationHistory")]
+        public List<Content> _conversationHistory = new();
         public double StressLevel { get; set; } = 0.0d;
 
 

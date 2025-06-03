@@ -61,8 +61,8 @@ namespace InvestigaIA.API
         {
             try
             {
-                suspeito._conversationHistory.AddRange(request.contents);
-                request.contents = suspeito._conversationHistory;
+
+                request.contents.AddRange(suspeito._conversationHistory);
 
                 var jsonContent = JsonSerializer.Serialize(request);
                 var httpContent = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
@@ -89,21 +89,7 @@ namespace InvestigaIA.API
 
 
 
-        private HttpClient HttpClienteFactory(string APIUrl)
-        {
-            var client = new HttpClient
-            {
-                BaseAddress = new Uri(APIUrl)
 
-            };
-
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-
-
-            return client;
-
-
-        }
 
 
     }

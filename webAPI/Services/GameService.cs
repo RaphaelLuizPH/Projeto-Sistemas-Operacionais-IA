@@ -27,13 +27,10 @@ namespace webAPI.Services
 
             _gameManager.Init();
 
-
-
-
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                await Task.Delay(1000, stoppingToken);
-            }
+            // while (!stoppingToken.IsCancellationRequested)
+            // {
+            //     await Task.Delay(1000, stoppingToken);
+            // }
         }
 
     }

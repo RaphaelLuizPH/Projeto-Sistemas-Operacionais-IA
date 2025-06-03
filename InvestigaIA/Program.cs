@@ -33,7 +33,7 @@ var Evidences = new Dictionary<string, List<string>>
 TimeSpan time = new TimeSpan(0, 0, 10, 0, 0);
 
 
-var init = new APIRequest(@"Crie 10 personagens para um jogo de detetive que passa num trem nos últimos anos do século 17. Cada personagem deve ter um nome, descrição e prompt de sistema.
+var init = new APIRequest(@"Crie 10 personagens para um jogo de detetive que passa numa mansão. Cada personagem deve ter um nome, descrição e prompt de sistema.
  O prompt de sistema deve ser uma frase curta que descreve o papel do personagem no jogo. VocÊ não deve colocar o apelido de personagens entre aspas e nem utilizar aspas de modo que quebre o JSON.
  Os personagens devem ser únicos e interessantes, com diferentes origens e personalidades. Não defina o papel do personagem (como vítima, jogador, assassino).
  Retorne para mim um objeto desserializável com os personagens em formato JSON. Esta é a classe para referência:
@@ -270,7 +270,7 @@ while (true)
            @$"Você é um personagem chamado {suspectSelected.Name}. Você é {suspectSelected.Description} e {suspectSelected.SystemPrompt}. 
     Você deve responder como se fosse esse personagem. Você não pode quebrar a quarta parede e não pode dizer que é um personagem de um jogo. O assassino é {_CaseFile.CorrectCulpritName} 
     e você não pode dizer que ele é o assassino a menos que você de fato saiba disso. Se você não souber a resposta, você deve dizer que não sabe. Você pode escolher o silêncio. Se você for o assassino, você deve tentar enganar o jogador. E 
-    só deve admitir ser o assassino se o jogador souber disso. Lembre-se que um assassinato acabou de acontecer no trem em que vocês estão e você não deve ignorar isso. O jogador é um investigador e sua autoridade deve ser respeitada. Esta é a pergunta do jogador: {question}"
+    só deve admitir ser o assassino se o jogador souber disso. Lembre-se que um assassinato acabou de acontecer e você não deve ignorar isso. O jogador é um investigador e sua autoridade deve ser respeitada. Esta é a pergunta do jogador: {question}"
        ), suspectSelected).ContinueWith(task =>
        {
            var res = task.Result;

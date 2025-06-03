@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InvestigaIA.API;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InvestigaIA.Classes
@@ -31,13 +32,17 @@ namespace InvestigaIA.Classes
 
         public void Init()
         {
-            Console.WriteLine("GameManager initialized.");
+            while (Games.Count > 0)
+            {
+                Console.Write("Game tick at " + DateTime.Now.ToString("HH:mm:ss"));
+            }
+
         }
         public async Task CreateGame()
         {
             var id = Ulid.NewUlid().ToString();
 
-            Games.Add(id, new GameInstance(_provider.GetRequiredService<GeminiService>()));
+            Games.Add(id, new GameInstance(_provider.GetRequiredService<GeminiService>(), id, _provider.GetRequiredService<IHubContext<GameHub>>()));
         }
 
 

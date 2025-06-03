@@ -55,3 +55,4 @@ F:\Code\Projeto Sistemas Operacionais IA\webAPI\bin\Debug\net9.0\InvestigaIA.pdb
 F:\Code\Projeto Sistemas Operacionais IA\webAPI\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.dll
 F:\Code\Projeto Sistemas Operacionais IA\webAPI\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 F:\Code\Projeto Sistemas Operacionais IA\webAPI\bin\Debug\net9.0\Ulid.dll
+F:\Code\Projeto Sistemas Operacionais IA\webAPI\bin\Debug\net9.0\System.Net.WebSockets.WebSocketProtocol.dll

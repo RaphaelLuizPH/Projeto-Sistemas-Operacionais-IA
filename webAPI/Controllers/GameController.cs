@@ -34,7 +34,7 @@ namespace webAPI.Controllers
 
 
         [HttpPost("Send/{id}", Name = "SendMessage")]
-        public async Task<IActionResult> Send([FromBody] string message, string id, string suspectName)
+        public async Task<IActionResult> Send(string message, string id, string suspectName)
         {
 
 
@@ -70,6 +70,7 @@ namespace webAPI.Controllers
                         gameInstance.CreatedAt,
                         TimeRemaining = gameInstance.time,
                         Suspects = gameInstance.suspects,
+
                         CaseFile = gameInstance._CaseFile,
 
                     };
@@ -98,7 +99,7 @@ namespace webAPI.Controllers
                 }
 
 
-                await _gameManager.Games[id].CreateSuspects();
+                await _gameManager.Games[id].StartGame();
                 return Ok(_gameManager.Games[id].suspects);
             }
             catch (Exception ex)

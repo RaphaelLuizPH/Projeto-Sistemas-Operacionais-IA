@@ -50,19 +50,18 @@ namespace TheInterrogatorAIDetective.Models
             Victim = victim.Name;
             Title = $"O caso de {victim.Name}";
             CorrectCulpritName = correctCulpritName.Name;
-            Kill(correctCulpritName, suspects);
+
         }
 
 
-        private void Kill(Suspeito suspeito, List<Suspeito> suspects)
-        {
-            suspects.Remove(suspeito);
-        }
+
+
+
 
 
         /// <summary>
         /// Displays the case file details in an attractive format using Spectre.Console.Panel.
         /// </summary>
-      
+
     }
 }

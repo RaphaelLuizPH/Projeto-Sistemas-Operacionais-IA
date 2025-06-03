@@ -7,7 +7,16 @@ export async function CreateGame() {
 }
 
 export async function SendMessage(id, message, suspectName) {
-  return axios.post(`${api_url}/api/Game/Send/${id}`, { message, suspectName });
+  return axios.post(`${api_url}/api/Game/Send/${id}`, null, {
+    params: {
+      id: id,
+      message: message,
+      suspectName: suspectName,
+    },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 export async function StartGame(id) {

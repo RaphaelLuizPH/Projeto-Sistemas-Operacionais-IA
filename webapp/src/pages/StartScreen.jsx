@@ -9,18 +9,6 @@ import "./StartScreen.css";
 import Loading from "../components/Loading";
 
 function StartScreen() {
-  const colorChangeAnimation = {
-    initial: { backgroundColor: "#var(--primary)" },
-    animate: {
-      backgroundColor: ["#070707", "var(--primary)", "#0a0101"],
-      transition: {
-        duration: 1,
-        repeat: Infinity,
-        repeatType: "reverse",
-      },
-    },
-  };
-
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -56,10 +44,7 @@ function StartScreen() {
   return (
     <>
       {loading && <Loading />}
-      <motion.div
-        className="start-menu-container w-full min-h-screen flex flex-col justify-around items-end"
-        {...colorChangeAnimation}
-      >
+      <motion.div className="start-menu-container w-full min-h-screen flex flex-col justify-around items-end">
         <div className="text-white text-6xl lg:text-[10rem] md:text-[6rem] mx-auto block text-center mt-20 h-fit">
           <motion.h1
             className=" font-exile block mt-auto whitespace-nowrap"

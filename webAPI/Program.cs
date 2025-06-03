@@ -7,8 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddSignalR();
 
-builder.Services.AddScoped<GameInstance>();
 builder.Services.AddSingleton<GameManager>();
 builder.Services.AddSingleton<IServiceProvider, ServiceProvider>();
 builder.Services.AddHttpClient<GeminiService>("GeminiClient", client =>
@@ -38,6 +38,15 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+
+
+    options.AddPolicy("AllowAll", policy =>
+   {
+       policy.WithOrigins("http://localhost:5173")
+             .AllowAnyHeader()
+             .AllowAnyMethod()
+             .AllowCredentials();
+   });
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -62,7 +71,11 @@ if (app.Environment.IsDevelopment())
 
 }
 
-app.UseCors();
+app.MapControllers();
+
+
+
+app.UseCors("AllowAll");
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -72,6 +85,13 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+app.UseRouting();
+
+app.MapHub<GameHub>("/gamehub");
+
+
 
 app.Run();
 
