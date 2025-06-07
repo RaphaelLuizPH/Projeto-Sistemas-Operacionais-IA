@@ -33,7 +33,7 @@ function Chat({ suspect, setThinking, thinking }) {
   return (
     <div className="relative  ml-auto height-full w-[50%] flex justify-end outline-white outline-2 outline-solid bg-secondary flex-col p-4 ">
       <div className="overflow-y-scroll no-scrollbar relative">
-        <div className=" sticky top-0 left-0 m-auto  ">
+        <div className=" sticky top-0 left-0   ">
           <Profile suspect={suspect} />
         </div>
         {conversationHistory?.map((message, index) => {
@@ -66,18 +66,7 @@ function Chat({ suspect, setThinking, thinking }) {
       </div>
 
       <div className="justify-self-end">
-        <div
-          ref={chatContainerRef}
-          style={{
-            background: "linear-gradient(to top, #ffffff10, transparent)",
-            height: "100px",
-            width: "100%",
-            bottom: "55px",
-            left: "0",
-            position: "absolute",
-            
-          }}
-        />
+        <div ref={chatContainerRef} style={{}} />
         <Search
           multiple
           className="mt-auto ml-auto"

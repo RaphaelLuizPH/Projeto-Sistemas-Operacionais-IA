@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { GetGame } from "../func/GameFunctions";
 import { m, motion, stagger } from "motion/react";
 import { SmallDashOutlined, LoadingOutlined } from "@ant-design/icons";
@@ -8,35 +8,26 @@ import { StartGame } from "../func/GameFunctions";
 import sleep from "../func/Sleep";
 import Chat from "../components/Chat";
 import * as signalR from "@microsoft/signalr";
-import Profile from "../components/Profile";
+import Objectives from "../components/Objectives";
 import "./GamePage.css";
 import { getConnection } from "../func/SignalRConnection";
-import { useRef } from "react";
+import { Popover } from "antd";
+import { FloatButton } from "antd";
+
 function GamePage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [suspect, setSuspect] = useState(null);
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(false);
   const [thinking, setThinking] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState("00:00");
   const connection = getConnection();
- 
-
 
   useEffect(() => {
     fetchGame();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, thinking]);
-
-
-
-
-  useEffect(() => {
-    if (suspect) {
-      setSuspect(game.suspects.find((s) => s.name === suspect.name));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game]);
+  }, [id]);
 
   useEffect(() => {
     if (connection.state === signalR.HubConnectionState.Connected) {
@@ -51,8 +42,27 @@ function GamePage() {
     });
 
     connection.on("ReceiveMessage", function (message) {
-      console.log("Game update: ", message);
       setTimeElapsed(message);
+    });
+
+    connection.on("Response", function (res) {
+      console.log("Response received:", res);
+    });
+
+    connection.on("Objectives", function (objectives) {
+      setGame((prevGame) => ({
+        ...prevGame,
+        objectives: objectives,
+      }));
+    });
+
+    connection.on("Conversation", function (conversationHistory) {
+      setSuspect((prevSuspect) => {
+        if (prevSuspect) {
+          return { ...prevSuspect, conversationHistory: conversationHistory };
+        }
+        return suspect;
+      });
     });
 
     return () => {
@@ -77,6 +87,7 @@ function GamePage() {
       setGame(response.data);
     } catch (error) {
       console.error("Error fetching game:", error);
+      navigate("/");
     }
   };
 
@@ -126,7 +137,7 @@ function GamePage() {
   }
 
   return (
-    <div className="relative w-screen h-screen p-6 overflow-clip bg-accent flex justify-between ">
+    <div className="relative w-screen h-screen p-6 overflow-clip bg-accent flex justify-between">
       <motion.div
         initial={{ x: 1000 }}
         animate={{ x: -400, delay: 4 }}
@@ -134,29 +145,53 @@ function GamePage() {
         transition={{ duration: 0.5, ease: "easeInOut" }}
         className="border-solid border-30 border-highlight overflow-y-scroll max-h-full w-fit no-scrollbar absolute z-4"
       >
+        <span className=" text-white text-[1rem] bg-highlight flex">
+          {game.caseFile.title}
+        </span>
         <h1 className=" font-exile text-white text-[3rem] bg-highlight w-full">
-          Suspeitos <span className="font-serif text-2xl">{timeElapsed.time}</span>
+          Suspeitos{" "}
+          <span className="font-serif text-2xl">{timeElapsed.time}</span>
         </h1>{" "}
         <motion.div className="flex flex-col overflow-y-scroll no-scrollbar">
           {game.suspects.map((s) => {
-        
+            if (s.name === game.caseFile.victim.name) {
+              return (
+                <Popover
+                  content={` ${s.name} - A vítima`}
+                  key={s.name}
+                  placement="right"
+                >
+                  <motion.img
+                    layoutId={`/src/assets/${s.imageCode}`}
+                    layout={"position"}
+                    key={s.name}
+                    onClick={() => {
+                      setSuspect(s);
+                    }}
+                    src={`/src/assets/${s.imageCode}.jpeg`}
+                    className="object-cover h-100 w-100 shrink-0 grow-1 grayscale-100"
+                  ></motion.img>
+                </Popover>
+              );
+            }
             return (
-              <motion.img
-                layoutId={`/src/assets/${s.imageCode}`}
-                layout={"position"}
-                key={s.name}
-                onClick={() => {
-                  setSuspect(s);
-                }}
-                src={`/src/assets/${s.imageCode}.jpeg`}
-                className="object-cover h-60 w-100 shrink-0 grow-1"
-              ></motion.img>
+              <Popover content={` ${s.name}`} key={s.name} placement="right">
+                <motion.img
+                  layoutId={`/src/assets/${s.imageCode}`}
+                  layout={"position"}
+                  key={s.name}
+                  onClick={() => {
+                    setSuspect(s);
+                  }}
+                  src={`/src/assets/${s.imageCode}.jpeg`}
+                  className="object-cover h-100 w-100 shrink-0 grow-1"
+                ></motion.img>
+              </Popover>
             );
           })}
         </motion.div>
       </motion.div>
-   
-
+      <Objectives obj={game.objectives} />
       {suspect && (
         <Chat suspect={suspect} setThinking={setThinking} thinking={thinking} />
       )}

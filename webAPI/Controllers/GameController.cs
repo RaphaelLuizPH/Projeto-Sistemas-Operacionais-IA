@@ -43,7 +43,7 @@ namespace webAPI.Controllers
                 var suspect = _gameManager.Games[id].suspects.FirstOrDefault(s => s.Name == suspectName);
 
 
-                var res = await _gameManager.Games[id].SendMessage(message, suspect);
+                var res = await _gameManager.Games[id].SendMessageGPT(message, suspect);
 
                 return Ok(res);
 
@@ -68,8 +68,8 @@ namespace webAPI.Controllers
                     var gameInfo = new
                     {
                         gameInstance.CreatedAt,
-                        TimeRemaining = gameInstance.time,
                         Suspects = gameInstance.suspects,
+                        Objectives = gameInstance._objectives,
 
                         CaseFile = gameInstance._CaseFile,
 

@@ -18,15 +18,39 @@ builder.Services.AddHttpClient<GeminiService>("GeminiClient", client =>
 });
 
 
+builder.Services.AddHttpClient<OpenAiService>("OpenAIClient", client =>
+{
+    var config = builder.Configuration;
+    client.BaseAddress = new Uri(config["APIUrl2"]);
+    var apiKey = config["APIKey2"];
+    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+});
+
+
+
+
+
+
 builder.Services.AddSingleton(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
     string apiKey = config["APIKey"];
-    string apiUrl = config["APIUrl"];
+
 
     return new GeminiService(APIKey: apiKey,
                              HttpClient: sp.GetRequiredService<IHttpClientFactory>().CreateClient("GeminiClient"));
 });
+
+builder.Services.AddSingleton(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+
+    return new OpenAiService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("OpenAIClient"));
+});
+
+
 
 builder.Services.AddHostedService<GameService>();
 

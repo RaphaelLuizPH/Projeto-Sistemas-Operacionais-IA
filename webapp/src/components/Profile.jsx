@@ -8,28 +8,27 @@ import { Avatar, Card, Flex, Switch } from "antd";
 
 function Profile({ suspect }) {
   const [loading, setLoading] = useState(true);
-  const actions = [
-    <SettingOutlined key="setting" />,
-    <EditOutlined key="edit" />,
-    <EllipsisOutlined key="ellipsis" />,
-  ];
 
   return (
     <Flex
       gap="middle"
       align="center"
       justify="center"
-      direction="row"
+      direction="column"
       className="flex flex-col items-center w-full lg:px-80"
       wrap
     >
       <Card
         loading={!loading}
-        actions={actions}
-        style={{ minWidth: "100%", flex: "2 0 100px" }}
+        style={{
+          width: "99%",
+          flex: "1 1 auto",
+          background: "#00000080",
+          backdropFilter: "blur(6px)",
+        }}
       >
         <Card.Meta
-          className=" min-w-full"
+          className=" min-w-full "
           avatar={
             <Avatar
               src={`/src/assets/${suspect.imageCode}.jpeg`}
@@ -37,10 +36,10 @@ function Profile({ suspect }) {
               size="large"
             />
           }
-          title={suspect.name}
+          title={<p>{suspect.name}</p>}
           description={
             <>
-              <p>{suspect.description}</p>
+              <p className=" text-white">{suspect.description}</p>
             </>
           }
         />

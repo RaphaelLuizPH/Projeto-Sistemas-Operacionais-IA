@@ -42,7 +42,7 @@ namespace InvestigaIA.Classes
         {
             var id = Ulid.NewUlid().ToString();
 
-            Games.Add(id, new GameInstance(_provider.GetRequiredService<GeminiService>(), id, _provider.GetRequiredService<IHubContext<GameHub>>()));
+            Games.Add(id, new GameInstance(_provider.GetRequiredService<GeminiService>(), id, _provider.GetRequiredService<IHubContext<GameHub>>(), _provider.GetRequiredService<OpenAiService>()));
         }
 
 

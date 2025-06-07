@@ -36,6 +36,7 @@ namespace InvestigaIA.API
                 var httpContent = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
 
                 var response = await _httpClient.PostAsync($"{_httpClient.BaseAddress}/v1beta/models/gemini-2.0-flash:generateContent?key={_APIKey}", httpContent);
+
                 response.EnsureSuccessStatusCode();
 
                 var responseBody = await response.Content.ReadFromJsonAsync<APIResponse>();
@@ -45,6 +46,10 @@ namespace InvestigaIA.API
 
                 return responseBody;
 
+            }
+            catch (HttpRequestException httpEx) when (httpEx.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -57,7 +62,7 @@ namespace InvestigaIA.API
         }
 
 
-        public async Task<APIResponse> Ask(APIRequest request, Suspeito suspeito)
+        public async Task<MessageAnswer> Ask(APIRequest request, Suspeito suspeito)
         {
             try
             {
@@ -72,9 +77,15 @@ namespace InvestigaIA.API
 
                 var responseBody = await response.Content.ReadFromJsonAsync<APIResponse>();
 
+                var cleanedResponse = ResponseCleanUpUtility.CleanUpResponse(responseBody.candidates[0].content.parts[0].text);
+
+                var messageResponse = JsonSerializer.Deserialize<MessageAnswer>(cleanedResponse);
+
+                responseBody.candidates[0].content.parts[0].text = messageResponse.Text;
+
                 suspeito._conversationHistory.Add(responseBody.candidates[0].content);
 
-                return responseBody;
+                return messageResponse;
 
             }
             catch (Exception ex)

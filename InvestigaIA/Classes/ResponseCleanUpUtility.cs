@@ -11,24 +11,23 @@ namespace InvestigaIA.Classes
 
         public static string CleanUpResponse(string response)
         {
-            // Remove any unwanted characters or formatting
+            
 
-            string cleanedResponse = response.Replace("\n", " ").Trim();
+            string cleanedResponse = response
+                .Replace("\n", " ")
+                .Replace("\r", " ")
+                .Replace("\t", " ")
+                .Replace("```", " ")
+                .Replace("csharp", " ")
+                .Replace("json", " ")
+                .Replace("  ", " ")
+                .Trim()
+                .Trim('`', ',', '.');
             if (cleanedResponse.StartsWith("json"))
             {
                 cleanedResponse = cleanedResponse[4..].TrimStart('\n', '\r', ' ');
             }
-            cleanedResponse = cleanedResponse.Replace("\r", " ").Trim();
-            cleanedResponse = cleanedResponse.Replace("json", " ").Trim();
-            cleanedResponse = cleanedResponse.Replace("\t", " ").Trim();
-            cleanedResponse = cleanedResponse.Replace("  ", " ").Trim();
-            cleanedResponse = cleanedResponse.Replace("```", " ").Trim();
-
-            cleanedResponse.Trim('`').Trim();
-
-
-            // Optionally, you can add more complex cleaning logic here
-            // For example, removing specific patterns or HTML tags
+           
 
             return cleanedResponse;
         }

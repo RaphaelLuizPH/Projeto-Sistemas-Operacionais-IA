@@ -110,6 +110,7 @@ function StartScreen() {
             }}
             className="cursor-pointer"
           >
+            {gameId} - 
             {new Date(value.createdAt).toLocaleString("pt-BR", {
               year: "numeric",
               month: "2-digit",
