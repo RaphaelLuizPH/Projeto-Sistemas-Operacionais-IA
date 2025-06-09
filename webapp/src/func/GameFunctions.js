@@ -32,3 +32,15 @@ export async function ListGames() {
 export async function GetGame(id) {
   return axios.get(`${api_url}/api/Game/Get/${id}`);
 }
+
+export async function EndGame(id, nome) {
+  return axios.post(`${api_url}/api/Game/end-game/${id}`, null, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: {
+      id: id,
+      nome: nome,
+    },
+  });
+}

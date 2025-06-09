@@ -5,6 +5,7 @@ using InvestigaIA.Classes;
 using TheInterrogatorAIDetective.Models;
 using Microsoft.AspNetCore.SignalR;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 
 
@@ -18,8 +19,10 @@ namespace InvestigaIA.Classes
 
 
 
-
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly OpenAiService openAiService;
+
+        public EndGameStats endGameStats { get; set; }
         private readonly Random random1 = new();
         private readonly Random random2 = new();
         public readonly Dictionary<string, List<string>> Evidences = new();
@@ -27,6 +30,7 @@ namespace InvestigaIA.Classes
         public List<Suspeito> suspects;
         public CaseFile _CaseFile;
 
+        [JsonInclude]
         public Dictionary<string, bool> _objectives = new();
 
         public DateTime CreatedAt { get; } = DateTime.Now;
@@ -101,19 +105,19 @@ namespace InvestigaIA.Classes
         Lembre-se que um assassinato acabou de acontecer e você não deve ignorar isso. O jogador é um investigador e sua autoridade deve ser respeitada.
         
          Retorne para mim SOMENTE um objeto desserializável em formato JSON em texto puro dessa classe: public string? Text public string? Completed. Onde Text é a sua resposta e 
-        Completed é o nome do objetivo, sua presença indica que o jogador o completou: {string.Join(",", _objectives.Select(kv => kv.Key))}. 
+        Completed é o nome do objetivo como escrito, sua presença indica que o jogador o completou: {string.Join(",", _objectives.Select(kv => kv.Key))}. 
          Esta é a pergunta do jogador: {question}";
                 case PromptType.Victim:
                     return @$"Você deve interpretar a vítima de um assassinato. O que significa que suas respostas devem conter apenas descrições entre parenteses de caracteristicas do corpo, ambiente, etc ou o resultado das ações que o 
         jogador enviar (exemplo: analisar o corpo, verificar bolsos). Seu personagem não deve revelar partes da drama, (PRINCIPALMENTE NÃO REVELAR QUEM FOI O ASSASSINO) e deve seguir esse roteiro: {_CaseFile.CrimeDetails}.  Retorne para mim SOMENTE um objeto desserializável em formato JSON em texto puro dessa classe: public string? Text public string? Completed. Onde Text é a sua resposta e 
-        Completed é o nome do objetivo, sua presença indica que o jogador o completou: {string.Join(",", _objectives.Select(kv => kv.Key))}. Esta é a pergunta do jogador: {question}";
+        Completed é o nome do objetivo como escrito, sua presença indica que o jogador o completou: {string.Join(",", _objectives.Select(kv => kv.Key))}. Esta é a pergunta do jogador: {question}";
                 case PromptType.Culprit:
                     return @$"Você é um personagem chamado {suspectSelected.Name}. Você é {suspectSelected.Description} e {suspectSelected.SystemPrompt}. 
         Você deve responder como se fosse esse personagem, não exagere no texto, máximo 2 paragrafos. Você não pode quebrar a quarta parede e não pode dizer que é um personagem de um jogo. 
-        Se você não souber a resposta, você deve dizer que não sabe. Você pode escolher o silêncio. Você É O ASSASSINO, seu objetivo é não ser pego, aqui está o roteiro: {_CaseFile.CrimeDetails}. 
+        Se você não souber a resposta, você deve dizer que não sabe. Você pode escolher o silêncio. Você É O ASSASSINO, seu objetivo é não admitir o crime facilmente, aqui está o roteiro: {_CaseFile.CrimeDetails}. 
         Retorne para mim SOMENTE um objeto desserializável em formato JSON em texto puro dessa classe: public string? Text public string? Completed. Onde Text é a sua resposta e 
-        Completed é o nome do objetivo, sua presença indica que o jogador o completou: {string.Join(",", _objectives.Select(kv => kv.Key))}. Se o jogador descobrir detalhes suficientes sobre o crime,
-         você foi pego e deve admitir e marcar como completo o objetivo relevante a confissão. 
+        Completed é o nome do objetivo como escrito, sua presença indica que o jogador o completou: {string.Join(",", _objectives.Select(kv => kv.Key))}. Se o jogador apresentar evidências 
+        irrefutáveis do seu papel no crime e esse número {suspectSelected.StressLevel} for maior que 0.5, você foi pego e deve admitir e marcar como completo o objetivo relevante a confissão. 
        Esta é a pergunta do jogador: {question} .
        ";
                 default:
@@ -122,6 +126,109 @@ namespace InvestigaIA.Classes
         }
 
 
+
+        public async Task<EndGameStats> EndGame(Suspeito acusado)
+
+        {
+            if (endGameStats != null)
+                return endGameStats;
+
+
+
+            try
+            {
+                await _semaphore.WaitAsync();
+
+                var newStats = new EndGameStats
+                {
+                    Time = time,
+                    CaseFile = _CaseFile,
+                    Acusado = acusado,
+                    Objetivos = _objectives.Where(kv => kv.Value == true).ToDictionary(kv => kv.Key, kv => kv.Value),
+                };
+
+                _running = false;
+                if (acusado.Name == _CaseFile.Victim.Name)
+                {
+                    var response = await GeminiClient.SendRequestAsync(new APIRequest($@"O investigador fez um palpite incorreto, esse é o fim do jogo. Ele chegou a conclusão de que o caso foi um suícidio, 
+                deixando assim o assassino se safar. Você deve agora escrever as consequências dessa ação. Lembra que esses são os personagens da história: {string.Join(",", suspects.Select(s => s.Name))} e 
+                esse é o roteiro {_CaseFile.CrimeDetails}")).ContinueWith(task =>
+                     {
+                         var result = task.Result;
+                         return result.candidates[0].content.parts[0].text;
+                     });
+                    newStats.Message = response;
+
+                    endGameStats = newStats;
+                    return endGameStats;
+                }
+
+
+                if (acusado.Name == _CaseFile.Culpado.Name)
+                {
+
+
+                    if (_objectives.Select(kv => kv.Value).Where(x => x == false).Count() > _objectives.Count / 2)
+                    {
+                        var response = await GeminiClient.SendRequestAsync(new APIRequest($@"O investigador fez um palpite correto, esse é o fim do jogo, mas não conseguiu completar os objetivos necessários para resolver o caso. 
+                    O culpado é {_CaseFile.Culpado.Name} e a vítima é {_CaseFile.Victim.Name}. Você deve agora escrever as consequências dessa ação. Lembra que esses são os personagens da história: {string.Join(",", suspects.Select(s => s.Name))} e 
+                    esse é o roteiro {_CaseFile.CrimeDetails}, retorne em texto simples, sem negrito ou italico, paragrafos separados por ponto final.")).ContinueWith(task =>
+                         {
+                             var result = task.Result;
+                             return result.candidates[0].content.parts[0].text;
+                         });
+                        newStats.Message = response;
+
+                        endGameStats = newStats;
+                        return endGameStats;
+                    }
+                    else
+                    {
+                        if (_objectives["Conseguir uma confissão do assassino"])
+                            _CaseFile.Culpado.Caught = true;
+
+
+                        var response = await GeminiClient.SendRequestAsync(new APIRequest($@"O investigador fez um palpite correto, esse é o fim do jogo, e conseguiu completar os objetivos necessários para resolver o caso. 
+                    O culpado é {_CaseFile.Culpado.Name} e a vítima é {_CaseFile.Victim.Name}. Você deve agora escrever as consequências dessa ação. Lembra que esses são os personagens da história: {string.Join(",", suspects.Select(s => s.Name))} e 
+                    esse é o roteiro {_CaseFile.CrimeDetails}, retorne em texto simples, sem negrito ou italico, paragrafos separados por ponto final.")).ContinueWith(task =>
+                    {
+                        var result = task.Result;
+                        return result.candidates[0].content.parts[0].text;
+                    });
+                        newStats.Message = response;
+                        newStats.JusticeServed = true;
+                        endGameStats = newStats;
+                        return endGameStats;
+                    }
+
+                }
+
+                else
+                {
+                    var response = await GeminiClient.SendRequestAsync(new APIRequest($@"O jogador fez um palpite incorreto. Ele chegou a conclusão de que o culpado é {acusado.Name}, 
+                mas na verdade o culpado é {_CaseFile.Culpado.Name}. Você deve agora escrever as consequências dessa ação. Lembra que esses são os personagens da história: {string.Join(",", suspects.Select(s => s.Name))} e 
+                esse é o roteiro {_CaseFile.CrimeDetails}, retorne em texto simples, sem negrito ou italico, paragrafos separados por ponto final.")).ContinueWith(task =>
+                     {
+                         var result = task.Result;
+                         return result.candidates[0].content.parts[0].text;
+                     });
+                    newStats.Message = response;
+
+
+                    endGameStats = newStats;
+                    return endGameStats;
+                }
+
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+
+
+
+
+        }
 
 
         public async Task StartGame()
@@ -185,7 +292,7 @@ namespace InvestigaIA.Classes
                 Thread.Sleep(5000); // Wait for 5 seconds
                 foreach (var suspect in suspects)
                 {
-                    if (suspect.StressLevel > 0.5)
+                    if (suspect.StressLevel >= 0.5)
                     {
                         suspect.StressLevel -= 0.1d;
                         await _hubContext.Clients.Group(gameId).SendAsync("ReceiveMessage", $"Stress levels balanced for suspects.");
@@ -251,7 +358,7 @@ namespace InvestigaIA.Classes
 
             try
             {
-
+                await _semaphore.WaitAsync();
 
                 var deserializedSuspects = JsonSerializer.Deserialize<List<Suspeito>>(cleanRes);
                 if (deserializedSuspects == null || !deserializedSuspects.Any())
@@ -265,6 +372,10 @@ namespace InvestigaIA.Classes
             catch (Exception ex)
             {
                 throw new Exception($"{ex.Message} - {res}, {cleanRes}");
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
@@ -299,6 +410,7 @@ namespace InvestigaIA.Classes
 
             try
             {
+                await _semaphore.WaitAsync();
                 var resObj = JsonSerializer.Deserialize<MessageAnswer>(res);
 
                 suspectSelected._conversationHistory.AddRange(
@@ -332,6 +444,9 @@ namespace InvestigaIA.Classes
                         _objectives[resObj.Completed] = true;
                         await _hubContext.Clients.Group(gameId).SendAsync("Objectives", _objectives);
 
+                        if (_objectives["Conseguir uma confissão do assassino"])
+                            _CaseFile.Culpado.Caught = true;
+
                     }
 
 
@@ -340,7 +455,7 @@ namespace InvestigaIA.Classes
 
 
                 suspectSelected.StressLevel += 0.1d;
-                await _hubContext.Clients.Group(gameId).SendAsync("Conversation", suspectSelected._conversationHistory);
+                await _hubContext.Clients.Group(gameId).SendAsync("Conversation", new { suspectSelected._conversationHistory, suspectSelected.StressLevel });
                 return suspectSelected._conversationHistory;
             }
             catch (JsonException ex)
@@ -366,8 +481,13 @@ namespace InvestigaIA.Classes
                 }
               }
               );
-
+                await _hubContext.Clients.Group(gameId).SendAsync("Conversation", new { suspectSelected._conversationHistory, suspectSelected.StressLevel });
                 return suspectSelected._conversationHistory;
+            }
+            finally
+            {
+
+                _semaphore.Release();
             }
 
 
@@ -392,7 +512,7 @@ namespace InvestigaIA.Classes
             try
             {
 
-
+                await _semaphore.WaitAsync();
                 APIRequest request;
 
                 if (suspectSelected.Name == _CaseFile.Culpado.Name)
@@ -438,6 +558,10 @@ namespace InvestigaIA.Classes
 
 
                 return suspectSelected._conversationHistory;
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 

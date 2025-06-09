@@ -56,10 +56,16 @@ function GamePage() {
       }));
     });
 
-    connection.on("Conversation", function (conversationHistory) {
+    connection.on("Conversation", function (data) {
+      console.log("Conversation history received:", data);
+
       setSuspect((prevSuspect) => {
         if (prevSuspect) {
-          return { ...prevSuspect, conversationHistory: conversationHistory };
+          return {
+            ...prevSuspect,
+            conversationHistory: data._conversationHistory,
+            stressLevel: data.stressLevel,
+          };
         }
         return suspect;
       });

@@ -1,13 +1,17 @@
 import React, { useState } from "react";
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import { Avatar, Card, Flex, Switch } from "antd";
+import { TableOutlined } from "@ant-design/icons";
+import { Avatar, Button, Card, Flex, Switch } from "antd";
+import { EndGame } from "../func/GameFunctions";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Profile({ suspect }) {
   const [loading, setLoading] = useState(true);
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const handleEnd = async () => {
+    navigate(`/game/end/${id}/${suspect.name}`);
+  };
 
   return (
     <Flex
@@ -15,11 +19,22 @@ function Profile({ suspect }) {
       align="center"
       justify="center"
       direction="column"
-      className="flex flex-col items-center w-full lg:px-80"
+      className="flex flex-col items-center w-full lg:px-80 "
       wrap
     >
       <Card
-        loading={!loading}
+       
+        actions={[
+          <Button
+            key="setting"
+            onClick={handleEnd}
+            color="danger"
+            variant="filled"
+            disabled={suspect.stressLevel < 0.1}
+          >
+            Acusar
+          </Button>,
+        ]}
         style={{
           width: "99%",
           flex: "1 1 auto",

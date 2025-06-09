@@ -12,6 +12,7 @@ import {
 import StartScreen from "./pages/StartScreen";
 import { AnimatePresence, delay } from "motion/react";
 import GamePage from "./pages/GamePage";
+import EndScreen from "./pages/EndScreen";
 const getGames = async () => {
   try {
     const response = await ListGames();
@@ -44,6 +45,14 @@ function App() {
               element={
                 <AnimateWrapper>
                   <GamePage />
+                </AnimateWrapper>
+              }
+            />
+            <Route
+              path="/game/end/:id/:suspect"
+              element={
+                <AnimateWrapper>
+                  <EndScreen />
                 </AnimateWrapper>
               }
             />

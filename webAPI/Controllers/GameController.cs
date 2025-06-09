@@ -132,7 +132,28 @@ namespace webAPI.Controllers
 
         }
 
+        [HttpPost("end-game/{gameId}")]
+        public async Task<IActionResult> EndGame(string gameId, string nome)
+        {
 
+            try
+            {
+                var gameInstance = _gameManager.GetGame(gameId);
+                if (gameInstance == null)
+                {
+                    return NotFound(new { Message = "Game instance not found." });
+                }
+
+                var acusado = gameInstance.suspects.FirstOrDefault(s => s.Name == nome);
+
+                var res = await gameInstance.EndGame(acusado);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while ending the game.", Error = ex.Message });
+            }
+        }
 
         // [HttpGet("/Info", Name = "GetGameStatus")]
         // public async Task<IActionResult> Get(string id)
