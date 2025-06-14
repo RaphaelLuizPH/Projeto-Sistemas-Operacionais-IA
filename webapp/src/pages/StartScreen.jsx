@@ -52,7 +52,7 @@ function StartScreen() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 2, ease: "easeInOut", type: "spring" }}
           >
-            Investiga IA
+            Investiga AI
           </motion.h1>
 
           <motion.div
@@ -102,16 +102,16 @@ function StartScreen() {
         closable={true}
         open={open}
       >
-        {Object.entries(games).map(([gameId, value]) => (
+        {games.map((gameId, value) => (
           <List.Item
-            key={gameId}
+            key={gameId.key}
             onClick={() => {
-              navigate(`/game/${gameId}`);
+              navigate(`/game/${gameId.key}`);
             }}
             className="cursor-pointer"
           >
-            {gameId} - 
-            {new Date(value.createdAt).toLocaleString("pt-BR", {
+            {gameId.title} -
+            {new Date(gameId.createdAt).toLocaleString("pt-BR", {
               year: "numeric",
               month: "2-digit",
               day: "2-digit",

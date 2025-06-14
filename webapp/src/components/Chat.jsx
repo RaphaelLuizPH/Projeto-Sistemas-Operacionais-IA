@@ -17,6 +17,14 @@ function Chat({ suspect, setThinking, thinking }) {
     if (value.trim() === "") return;
     setThinking(true);
     try {
+      conversationHistory.push({
+        role: "user",
+        parts: [
+          {
+            text: value,
+          },
+        ],
+      });
       await SendMessage(id, value, name);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -82,7 +90,6 @@ function Chat({ suspect, setThinking, thinking }) {
                         () => showCursorAnimation(true),
                         message.parts[0].text,
                         () => {
-                          
                           if (chatContainerRef.current) {
                             chatContainerRef.current.scrollIntoView({
                               behavior: "smooth",

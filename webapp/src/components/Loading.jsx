@@ -1,10 +1,14 @@
 import { Flex, Progress } from "antd";
 import { useEffect, useState } from "react";
 
-function Loading() {
+function Loading({ time = 100 }) {
   const [percent, setPercent] = useState(0);
 
   const increasePercent = () => {
+    if (percent === 90) {
+      return;
+    }
+
     setPercent((prev) => {
       if (prev < 100) {
         return prev + 10;
@@ -14,7 +18,7 @@ function Loading() {
   };
 
   useEffect(() => {
-    const interval = setInterval(increasePercent, 100);
+    const interval = setInterval(increasePercent, time);
     return () => clearInterval(interval);
   }, []);
 

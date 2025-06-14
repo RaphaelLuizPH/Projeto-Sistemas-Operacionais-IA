@@ -13,6 +13,13 @@ function Profile({ suspect }) {
     navigate(`/game/end/${id}/${suspect.name}`);
   };
 
+  const stressColor =
+    suspect.stressLevel < 0.5
+      ? "green"
+      : suspect.stressLevel < 0.8
+      ? "yellow"
+      : "red";
+
   return (
     <Flex
       gap="middle"
@@ -23,14 +30,18 @@ function Profile({ suspect }) {
       wrap
     >
       <Card
-       
+        extra={
+          <h1 className={` text-2xl font-bold text-${stressColor}-300 `}>
+            {(suspect.stressLevel * 10).toFixed(0)}
+          </h1>
+        }
         actions={[
           <Button
             key="setting"
             onClick={handleEnd}
             color="danger"
             variant="filled"
-            disabled={suspect.stressLevel < 0.1}
+            disabled={suspect.stressLevel < 0.5}
           >
             Acusar
           </Button>,

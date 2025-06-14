@@ -28,6 +28,7 @@ namespace InvestigaIA.Classes
         public readonly Dictionary<string, List<string>> Evidences = new();
         private TimeSpan time = new(0, 0, 0);
         public List<Suspeito> suspects;
+        [JsonInclude]
         public CaseFile _CaseFile;
 
         [JsonInclude]
@@ -276,7 +277,7 @@ namespace InvestigaIA.Classes
 
         private async void TimerThreadMethod()
         {
-            while (true)
+            while (_running)
             {
                 Thread.Sleep(1000); // Wait for 1 second
                 time = time.Add(TimeSpan.FromSeconds(1));
@@ -287,7 +288,7 @@ namespace InvestigaIA.Classes
 
         private async void StressLevelBalanceThreadMethod()
         {
-            while (true)
+            while (_running)
             {
                 Thread.Sleep(5000); // Wait for 5 seconds
                 foreach (var suspect in suspects)

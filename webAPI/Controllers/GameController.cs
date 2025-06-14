@@ -121,12 +121,17 @@ namespace webAPI.Controllers
             {
 
 
-                return Ok(_gameManager.Games);
+                return Ok(_gameManager.Games.Select(g => new
+                {
+                    g.Key,
+                    g.Value.CreatedAt,
+                    title = g.Value._CaseFile is not null ? g.Value._CaseFile.Title : "Jogo não iniciado",
+                }).ToList());
             }
-            catch
+            catch (Exception ex)
             {
 
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, "Error retrieving game list: " + ex.Message);
             }
 
 

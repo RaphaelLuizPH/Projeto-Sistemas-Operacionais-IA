@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getConnection } from "../func/SignalRConnection";
 import * as signalR from "@microsoft/signalr";
 import { EndGame } from "../func/GameFunctions";
-
+import Loading from "../components/Loading";
 const EndScreen = () => {
   const { id, suspect } = useParams();
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const EndScreen = () => {
     <>
       <div className="end-screen p-20 flex flex-col items-center justify-center h-fit min-h-screen  bg-secondary">
         <h1 className="font-exile text-white  text-[5rem]">Fim de jogo</h1>
-
+       {!hasEnded && <Loading time={200} />}
         <Button
           type="primary"
           variant="filled"
@@ -42,7 +42,6 @@ const EndScreen = () => {
         >
           Voltar ao menu
         </Button>
-
         {stats && (
           <div className="bg-highlight w-full h-fit mt-25 p-6">
             <div className="text-white flex flex-row gap-10 bg-primary p-6 rounded-lg justify-center items-start">
