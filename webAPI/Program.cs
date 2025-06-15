@@ -87,9 +87,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Only add Swagger in development environment
-if (builder.Environment.IsDevelopment())
-{
+
     builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -99,7 +97,7 @@ if (builder.Environment.IsDevelopment())
             Description = "API for the InvestigaIA game"
         });
     });
-}
+
 
 builder.Services.AddControllers();
 
