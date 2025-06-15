@@ -5,14 +5,12 @@ let connection;
 export function getConnection() {
   if (!connection) {
     // Determine if we're in production or development
-    const isProd =
-      import.meta.env.VITE_APP_API_URL ||
-      window.location.hostname !== "localhost";
+    const isProd = window.location.hostname !== "localhost";
 
     // Set the appropriate base URL
-    const baseUrl = isProd
-      ? import.meta.env.VITE_APP_API_URL
-      : "http://localhost:5014/gamehub";
+    const baseUrl = `${
+      isProd ? import.meta.env.VITE_APP_API_URL : "http://localhost:5014"
+    }/gamehub`;
 
     connection = new signalR.HubConnectionBuilder()
       .withUrl(baseUrl)
