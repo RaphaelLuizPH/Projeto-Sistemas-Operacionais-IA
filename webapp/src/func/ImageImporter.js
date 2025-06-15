@@ -4,20 +4,23 @@
  */
 
 // Import all images
-function importAll(r) {
+function importAll() {
   const images = {};
-  Object.keys(r).forEach((item) => {
-    // Extract the filename without extension as the key
-    const key = item.replace("./", "").replace(/\.(jpeg|jpg|png|svg)$/, "");
-    images[key] = item;
-  });
+  for (var i = 0; i < 10; i++) {
+    const female = `female${i + 1}`;
+    const male = `male${i + 1}`;
+    let url = `/images/${female}.jpeg`;
+
+    images[female] = url;
+
+    url = `/images/${male}.jpeg`;
+
+    images[male] = url;
+  }
   return images;
 }
 
 // Import all images from the assets directory
-const images = importAll(
-  import.meta.glob("@/assets/*.{jpeg,jpg,png,svg}", { eager: true })
-);
-
+const images = importAll();
 
 export default images;

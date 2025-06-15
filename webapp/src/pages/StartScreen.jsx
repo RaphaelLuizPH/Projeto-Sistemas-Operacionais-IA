@@ -91,7 +91,7 @@ function StartScreen() {
                 <motion.img
                   layoutId={key}
                   draggable={false}
-                  src={`..${images[key]}`}
+                  src={`${images[key]}`}
                   className="w-50 h-50 m-2 rounded-lg shadow-lg object-cover "
                   whileHover={{ scale: 1.1 }}
                 />
