@@ -85,8 +85,10 @@ function GamePage() {
     connection.on("Conversation", function (data) {
       console.log("Conversation history received:", data);
       console.log("Current suspect state:", suspect);
-      const updatedSuspect = suspect;
-      
+      const updatedSuspect = game.suspects.find(
+        (s) => s.name === data.suspectName
+      );
+
       if (updatedSuspect) {
         updatedSuspect.conversationHistory = data._conversationHistory;
         updatedSuspect.stressLevel = data.stressLevel;
