@@ -21,19 +21,28 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '9.x'
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
+      - name: Restore appsettings.json
+        run: echo "${{ secrets.APPSETTINGS_JSON }}" > ./appsettings.Production.json
+  
       - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish -c Release -o ./publish
+
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./publish
+
+
+
+
+
 
   deploy:
     runs-on: windows-latest
@@ -50,6 +59,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
+          path: ./publish
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -57,12 +67,16 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F1890317485D4EEA94F4C8EEEC36FEDD }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_17C67DFD31AE4753ADF032DA42DA1875 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B1514EC404524545AF8F0DDC27349706 }}
+          auth-type: "SERVICE_PRINCIPAL"
 
+
+
+      
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'InvestigaAi'
           slot-name: 'Production'
-          package: .
+          package: ./publish
           
