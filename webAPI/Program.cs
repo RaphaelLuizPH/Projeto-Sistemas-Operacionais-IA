@@ -66,7 +66,7 @@ builder.Services.AddCors(options =>
     });
 
 
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("LocalHost", policy =>
    {
        policy.WithOrigins("http://localhost:5173")
              .AllowAnyHeader()
@@ -76,6 +76,16 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 // Only add Swagger in development environment
 if (builder.Environment.IsDevelopment())
@@ -103,13 +113,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.MapOpenApi();
-    app.UseCors("Production");
+
 }
 else
 {
-    app.UseCors("AllowAll");
+
 }
 
+app.UseCors("AllowAll");
 app.MapControllers();
 
 
