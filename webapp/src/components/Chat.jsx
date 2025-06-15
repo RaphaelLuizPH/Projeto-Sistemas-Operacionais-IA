@@ -57,7 +57,7 @@ function Chat({ suspect, setThinking, thinking }) {
   var lastIndex = conversationHistory?.length - 1;
 
   return (
-    <div className="relative  ml-auto height-full w-[50%] rounded flex justify-end outline-white outline-2 outline-solid bg-secondary flex-col p-4 ">
+    <div className="relative max-height-[100%] md:w-[50%] w-[100%] rounded flex justify-end outline-white outline-2 outline-solid bg-secondary flex-col p-4 ">
       <div className="overflow-y-scroll no-scrollbar relative">
         <div className="sticky top-0 left-0   ">
           <Profile suspect={suspect} />

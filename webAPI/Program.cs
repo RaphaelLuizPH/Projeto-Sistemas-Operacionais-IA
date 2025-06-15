@@ -28,6 +28,7 @@ builder.Services.AddHttpClient<OpenAiService>("OpenAIClient", client =>
 });
 
 
+builder.Logging.AddConsole();
 
 
 

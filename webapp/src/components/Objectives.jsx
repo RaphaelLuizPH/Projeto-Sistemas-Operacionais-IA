@@ -10,7 +10,7 @@ function Objectives({ obj }) {
   });
 
   return (
-    <div className="h-full w-ful ml-30 p-10 overflow-y-scroll no-scrollbar">
+    <div className="  p-10 overflow-y-scroll no-scrollbar max-h-[calc(100vh-100px)] md:w-[50%] w-[100%] ">
       <h2
         onClick={() => setShow(!show)}
         className={`transition-all text-6xl font-bold mb-4 font-exile cursor-pointer text-white ${
@@ -36,7 +36,7 @@ const ObjectiveCard = ({ objective, index }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2, delay: index / 10 }}
-      className=" relative bg-white p-4 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] mb-4 flex items-center justify-between "
+      className=" relative bg-white p-4 rounded-lg shadow-[0_3px_10px_rgb(0,0,0,0.2)] mb-4 flex items-center justify-between  flex-shrink-3"
     >
       <p className="mr-10 text-wrap">{objective.description}</p>
       {objective.completed ? (

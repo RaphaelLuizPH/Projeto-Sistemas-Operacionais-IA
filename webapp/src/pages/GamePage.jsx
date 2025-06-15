@@ -98,16 +98,25 @@ function GamePage() {
   };
 
   const handleStartGame = async () => {
+    let attempts = 0;
+    const maxAttempts = 3;
     setLoading(true);
-    try {
-      const response = await StartGame(id);
-      console.log("Game started successfully:", response);
-      fetchGame();
-      sleep(1000);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error starting game:", error);
-      setLoading(false);
+    while (attempts < maxAttempts) {
+      try {
+        const response = await StartGame(id);
+        console.log("Game started successfully:", response);
+        await fetchGame(); // Ensure fetchGame is awaited if it's asynchronous
+        setLoading(false);
+        return;
+      } catch (error) {
+        attempts++;
+        console.error(`Error starting game (Attempt ${attempts}):`, error);
+        if (attempts >= maxAttempts) {
+          console.error("Max retry attempts reached.");
+          setLoading(false);
+          return;
+        }
+      }
     }
   };
 
@@ -143,13 +152,13 @@ function GamePage() {
   }
 
   return (
-    <div className="relative w-screen h-screen p-6 overflow-clip bg-accent flex justify-between">
+    <div className="relative w-screen min-h-screen h-fit p-6 overflow-clip bg-accent flex justify-between">
       <motion.div
         initial={{ x: 1000 }}
         animate={{ x: -400, delay: 4 }}
         whileHover={{ x: 0, delay: 0.2 }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="border-solid border-30 border-highlight overflow-y-scroll max-h-full w-fit no-scrollbar absolute z-4"
+        className="border-solid border-30 border-highlight absolute z-4 "
       >
         <span className=" text-white text-[1rem] bg-highlight flex">
           {game.caseFile.title}
@@ -158,7 +167,7 @@ function GamePage() {
           Suspeitos{" "}
           <span className="font-serif text-2xl">{timeElapsed.time}</span>
         </h1>{" "}
-        <motion.div className="flex flex-col overflow-y-scroll no-scrollbar">
+        <div className=" overflow-y-scroll no-scrollbar h-[calc(100vh-200px)]">
           {game.suspects.map((s) => {
             if (s.name === game.caseFile.victim.name) {
               return (
@@ -195,12 +204,18 @@ function GamePage() {
               </Popover>
             );
           })}
-        </motion.div>
-      </motion.div>
-      <Objectives obj={game.objectives} />
-      {suspect && (
-        <Chat suspect={suspect} setThinking={setThinking} thinking={thinking} />
-      )}
+        </div>
+      </motion.div>      <div className="ml-30 flex flex-col sm:flex-row min-h-full w-full justify-between gap-4">
+        <Objectives obj={game.objectives} />
+
+        {suspect && (
+          <Chat
+            suspect={suspect}
+            setThinking={setThinking}
+            thinking={thinking}
+          />
+        )}
+      </div>
     </div>
   );
 }
