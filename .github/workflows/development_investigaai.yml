@@ -69,13 +69,8 @@ jobs:
         uses: azure/appservice-settings@v1
         with:
           app-name: 'InvestigaAi'
-          app-settings-json: |
-            {
-              "APIKey": "${{ secrets.GEMINI_KEY }}",
-              "APIUrl": "https://generativelanguage.googleapis.com",
-              "APIKey2": "${{ secrets.OPENAI_KEY }}",
-              "APIUrl2": "https://api.openai.com/v1/chat/completions"
-            }
+          app-settings-json: >
+            {"APIKey":"${{ secrets.GEMINI_KEY }}","APIUrl":"https://generativelanguage.googleapis.com","APIKey2":"${{ secrets.OPENAI_KEY }}","APIUrl2":"https://api.openai.com/v1/chat/completions"}
           mask-inputs: true
 
       
