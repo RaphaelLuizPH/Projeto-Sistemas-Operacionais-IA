@@ -55,48 +55,52 @@ builder.Services.AddSingleton(sp =>
 
 builder.Services.AddHostedService<GameService>();
 
+// Configure CORS - single configuration for all policies
 builder.Services.AddCors(options =>
 {
+    // Production policy
     options.AddPolicy("Production", policy =>
     {
         policy.WithOrigins("https://proud-rock-0f29bc20f.6.azurestaticapps.net")
-            .AllowAnyHeader()
-             .AllowAnyMethod()
-             .AllowCredentials();
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 
+    // Local development policy
+    options.AddPolicy("Development", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
 
-    options.AddPolicy("LocalHost", policy =>
-   {
-       policy.WithOrigins("http://localhost:5173")
-             .AllowAnyHeader()
-             .AllowAnyMethod()
-             .AllowCredentials();
-   });
+    // Combined policy for multiple origins
+    options.AddPolicy("CombinedPolicy", policy =>
+    {
+        policy.WithOrigins(
+                "https://proud-rock-0f29bc20f.6.azurestaticapps.net",
+                "http://localhost:5173"
+              )
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
 });
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddCors(options =>
+
+builder.Services.AddSwaggerGen(c =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        Title = "InvestigaIA API",
+        Version = "v1",
+        Description = "API for the InvestigaIA game"
     });
 });
-
-
-    builder.Services.AddSwaggerGen(c =>
-    {
-        c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-        {
-            Title = "InvestigaIA API",
-            Version = "v1",
-            Description = "API for the InvestigaIA game"
-        });
-    });
 
 
 builder.Services.AddControllers();
@@ -104,40 +108,28 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+// Apply middleware in the correct order
 app.UseRouting();
 
+// Apply CORS before any routing happens
+app.UseCors("CombinedPolicy");
+
+// Apply HTTPS redirection early in the pipeline
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+// Development-specific middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
     app.MapOpenApi();
-
-}
-else
-{
-
 }
 
-app.UseCors("AllowAll");
+// Map controllers and endpoints
 app.MapControllers();
-
-
-
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-
-
-
 app.MapHub<GameHub>("/gamehub");
-
-
 
 app.Run();
 
