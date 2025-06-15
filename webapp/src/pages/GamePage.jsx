@@ -86,7 +86,7 @@ function GamePage() {
       console.log("Conversation history received:", data);
       console.log("Current suspect state:", suspect);
       const updatedSuspect = game.suspects.find(
-        (s) => s.name === data.suspectName
+        (s) => s.name === data.name
       );
 
       if (updatedSuspect) {
