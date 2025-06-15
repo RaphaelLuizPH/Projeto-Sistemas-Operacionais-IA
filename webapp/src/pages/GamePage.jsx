@@ -24,6 +24,9 @@ function GamePage() {
   const [timeElapsed, setTimeElapsed] = useState("00:00");
   const connection = getConnection();
 
+
+  
+
   useEffect(() => {
     fetchGame();
     // eslint-disable-next-line react-hooks/exhaustive-deps

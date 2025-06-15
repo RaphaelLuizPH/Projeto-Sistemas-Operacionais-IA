@@ -8,6 +8,8 @@ import sleep from "../func/Sleep";
 import "./StartScreen.css";
 import Loading from "../components/Loading";
 
+
+
 function StartScreen() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,8 @@ function StartScreen() {
   };
 
   const [open, setOpen] = useState(false);
+
+
 
   return (
     <>
