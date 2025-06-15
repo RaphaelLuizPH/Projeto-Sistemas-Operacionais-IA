@@ -16,7 +16,7 @@ function importAll(r) {
 
 // Import all images from the assets directory
 const images = importAll(
-  import.meta.glob("./assets/*.{jpeg,jpg,png,svg}", { eager: true })
+  import.meta.glob("@/assets/*.{jpeg,jpg,png,svg}", { eager: true })
 );
 
 
