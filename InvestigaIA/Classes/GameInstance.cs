@@ -456,7 +456,7 @@ namespace InvestigaIA.Classes
 
 
                 suspectSelected.StressLevel += 0.1d;
-                await _hubContext.Clients.Group(gameId).SendAsync("Conversation", new { suspectSelected._conversationHistory, suspectSelected.StressLevel });
+                await _hubContext.Clients.Group(gameId).SendAsync("Conversation", new { suspectSelected.Name, suspectSelected._conversationHistory, suspectSelected.StressLevel });
                 return suspectSelected._conversationHistory;
             }
             catch (JsonException ex)
