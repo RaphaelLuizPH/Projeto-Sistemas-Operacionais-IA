@@ -198,7 +198,7 @@ function GamePage() {
                   onClick={() => {
                     setSuspect(s);
                   }}
-                  src={`/src/assets/${s.imageCode}.jpeg`}
+                  src={`../assets/${s.imageCode}.jpeg`}
                   className="object-cover h-100 w-100 shrink-0 grow-1"
                 ></motion.img>
               </Popover>
