@@ -96,19 +96,24 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.UseRouting();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
     app.MapOpenApi();
+    app.UseCors("Production");
+}
+else
+{
+    app.UseCors("AllowAll");
 }
 
 app.MapControllers();
 
 
 
-app.UseCors("AllowAll");
-app.UseCors("Production");
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -119,7 +124,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-app.UseRouting();
+
 
 app.MapHub<GameHub>("/gamehub");
 
