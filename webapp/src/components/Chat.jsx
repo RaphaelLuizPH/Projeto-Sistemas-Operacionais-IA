@@ -7,12 +7,12 @@ import { useState, useEffect, useRef } from "react";
 const { Search } = Input;
 import { AnimatePresence, motion } from "motion/react";
 import Profile from "./Profile";
-function Chat({ suspect, setThinking, thinking }) {
-  const chatContainerRef = useRef(null); // Ref for the chat container
+function Chat({ suspect, setThinking, thinking, chatContainerRef }) {
+  // Ref for the chat container
   const { id } = useParams();
   const [message, setMessage] = useState([]);
-  const [cursor, setCursor] = useState(true);
   const { name, conversationHistory } = suspect;
+  console.log("Chat component rendered with suspect:", suspect);
   const handleSendMessage = async (value) => {
     if (value.trim() === "") return;
     setThinking(true);
@@ -33,14 +33,12 @@ function Chat({ suspect, setThinking, thinking }) {
     }
   };
 
-  const cursorRef = useRef(null);
-
   const showCursorAnimation = (show) => {
-    if (!cursorRef.current) {
+    if (!chatContainerRef.current) {
       return;
     }
 
-    const el = cursorRef.current;
+    const el = chatContainerRef.current;
     if (show) {
       el.classList.add("custom-type-animation-cursor");
     } else {
@@ -48,16 +46,10 @@ function Chat({ suspect, setThinking, thinking }) {
     }
   };
 
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [suspect.conversationHistory]); // Trigger scrolling when conversationHistory changes
-
   var lastIndex = conversationHistory?.length - 1;
 
   return (
-    <div className="relative max-height-[100%] md:w-[50%] w-[100%] rounded flex justify-end outline-white outline-2 outline-solid bg-secondary flex-col p-4 ">
+    <div className="relative max-h-[calc(100vh-100px)]  md:w-[50%] w-[100%] rounded flex justify-end outline-white outline-2 outline-solid bg-secondary flex-col p-4 ">
       <div className="overflow-y-scroll no-scrollbar relative">
         <div className="sticky top-0 left-0   ">
           <Profile suspect={suspect} />
@@ -84,18 +76,20 @@ function Chat({ suspect, setThinking, thinking }) {
                   >
                     <TypeAnimation
                       className={"custom-type-animation-cursor"}
-                      ref={cursorRef}
+                      ref={chatContainerRef}
                       splitter={(str) => str.split(/(?= )/)}
                       sequence={[
                         () => showCursorAnimation(true),
                         message.parts[0].text,
+                        showCursorAnimation(false),
                         () => {
                           if (chatContainerRef.current) {
                             chatContainerRef.current.scrollIntoView({
                               behavior: "smooth",
+                              block: "end",
+                              inline: "nearest",
                             });
                           }
-                          showCursorAnimation(false);
                         },
                       ]}
                       wrapper="p"
@@ -136,10 +130,7 @@ function Chat({ suspect, setThinking, thinking }) {
       </div>
 
       <div className="justify-self-end">
-        <div
-          ref={chatContainerRef}
-          className="border-t-1 border-gray-100 opacity-[0.2] mt-6"
-        />
+        <div className="border-t-1 border-gray-100 opacity-[0.2] mt-6" />
         <Search
           multiple
           className=" ml-auto"

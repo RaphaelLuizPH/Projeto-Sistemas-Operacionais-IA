@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { GetGame } from "../func/GameFunctions";
 import { m, motion, stagger } from "motion/react";
@@ -23,27 +23,50 @@ function GamePage() {
   const [thinking, setThinking] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState("00:00");
   const connection = getConnection();
-
-
-  
-
+  const chatContainerRef = useRef(null);
   useEffect(() => {
     fetchGame();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // Connect to SignalR once
   useEffect(() => {
     if (connection.state === signalR.HubConnectionState.Connected) {
       console.log("Already connected to SignalR");
       return;
     }
 
-    connection.start().then(function () {
-      console.log("Connected to SignalR");
+    connection
+      .start()
+      .then(function () {
+        console.log("Connected to SignalR");
+        connection.invoke("JoinGame", id);
+      })
+      .catch((err) => console.error("SignalR Connection Error:", err));
 
-      connection.invoke("JoinGame", id);
-    });
+    return () => {
+      const disconnect = async () => {
+        try {
+          await connection.invoke("LeaveGame", id);
+          await connection.stop();
+          console.log("Disconnected and left game:", id);
+        } catch (err) {
+          console.error("Error during disconnect:", err);
+        }
+      };
+      disconnect();
+    };
+  }, [id, connection]);
 
+  // Set up event handlers with current state references
+  useEffect(() => {
+    // Clean up previous handlers to avoid duplicates
+    connection.off("ReceiveMessage");
+    connection.off("Response");
+    connection.off("Objectives");
+    connection.off("Conversation");
+
+    // Set up new handlers with current closures
     connection.on("ReceiveMessage", function (message) {
       setTimeElapsed(message);
     });
@@ -61,34 +84,35 @@ function GamePage() {
 
     connection.on("Conversation", function (data) {
       console.log("Conversation history received:", data);
+      console.log("Current suspect state:", suspect);
+      const updatedSuspect = suspect;
+      
+      if (updatedSuspect) {
+        updatedSuspect.conversationHistory = data._conversationHistory;
+        updatedSuspect.stressLevel = data.stressLevel;
 
-      setSuspect((prevSuspect) => {
-        if (prevSuspect) {
+        setSuspect(updatedSuspect);
+
+        setGame((prevGame) => {
+          if (!prevGame || !prevGame.suspects) return prevGame;
+
           return {
-            ...prevSuspect,
-            conversationHistory: data._conversationHistory,
-            stressLevel: data.stressLevel,
+            ...prevGame,
+            suspects: prevGame.suspects.map((s) =>
+              s.name === updatedSuspect.name ? updatedSuspect : s
+            ),
           };
-        }
-        return suspect;
-      });
+        });
+      }
     });
 
     return () => {
-      const disconnect = async () => {
-        try {
-          await connection.invoke("LeaveGame", id);
-          connection.off("ReceiveMessage");
-          await connection.stop();
-          console.log("Disconnected and left game:", id);
-        } catch (err) {
-          console.error("Error during disconnect:", err);
-        }
-      };
-
-      disconnect();
+      connection.off("ReceiveMessage");
+      connection.off("Response");
+      connection.off("Objectives");
+      connection.off("Conversation");
     };
-  }, [id]);
+  }, [id, connection, suspect]);
 
   const fetchGame = async () => {
     try {
@@ -208,11 +232,13 @@ function GamePage() {
             );
           })}
         </div>
-      </motion.div>      <div className="ml-30 flex flex-col sm:flex-row min-h-full w-full justify-between gap-4">
+      </motion.div>
+      <div className="ml-30 flex flex-col sm:flex-row min-h-full  w-full justify-between gap-4">
         <Objectives obj={game.objectives} />
 
         {suspect && (
           <Chat
+            chatContainerRef={chatContainerRef}
             suspect={suspect}
             setThinking={setThinking}
             thinking={thinking}

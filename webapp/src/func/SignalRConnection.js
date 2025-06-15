@@ -5,7 +5,7 @@ let connection;
 export function getConnection() {
   if (!connection) {
     // Determine if we're in production or development
-    const isProd = window.location.hostname !== "localhost";
+    const isProd = true;
 
     // Set the appropriate base URL
     const baseUrl = `${
