@@ -76,6 +76,7 @@ function Chat({ suspect, setThinking, thinking, chatContainerRef }) {
                   >
                     <TypeAnimation
                       className={"custom-type-animation-cursor"}
+                      key={message.parts[0].text}
                       ref={chatContainerRef}
                       splitter={(str) => str.split(/(?= )/)}
                       sequence={[
@@ -95,6 +96,7 @@ function Chat({ suspect, setThinking, thinking, chatContainerRef }) {
                       wrapper="p"
                       speed={50}
                       cursor={false}
+                      repeat={0}
                     />
                   </div>
                 </motion.div>
