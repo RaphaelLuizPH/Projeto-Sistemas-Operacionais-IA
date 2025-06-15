@@ -37,24 +37,16 @@ jobs:
           path: ./publish
 
 
-      - name: Set API Keys
+      - name: Set API Keys in Azure App Settings
         uses: azure/appservice-settings@v1
         with:
             app-name: 'InvestigaAi'
-            settings-json: |
+            app-settings-json: |
               {
-              "Logging": {
-                "LogLevel": {
-                  "Default": "Information",
-                  "Microsoft.AspNetCore": "Warning"
-                }
-              },
-              "AllowedHosts": "*",
-            
-              "APIKey": "${{ secrets.GEMINI_KEY }}",
-              "APIUrl": "https://generativelanguage.googleapis.com",
-              "APIUrl2": "https://api.openai.com/v1/chat/completions",
-              "APIKey2": "${{ secrets.OPENAI_KEY }}"
+                "APIKey": "${{ secrets.GEMINI_KEY }}",
+                "APIUrl": "https://generativelanguage.googleapis.com",
+                "APIKey2": "${{ secrets.OPENAI_KEY }}",
+                "APIUrl2": "https://api.openai.com/v1/chat/completions"
               }
 
 
