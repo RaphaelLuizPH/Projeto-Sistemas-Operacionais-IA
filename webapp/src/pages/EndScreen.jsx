@@ -70,7 +70,7 @@ const EndScreen = () => {
 
               <img
                 className="w-60 h-60 object-cover grayscale-100 ml-auto"
-                src={`/src/assets/${stats?.caseFile.victim.imageCode}.jpeg`}
+                src={`/images/${stats?.caseFile.victim.imageCode}.jpeg`}
                 alt=""
               />
             </div>

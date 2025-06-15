@@ -186,7 +186,7 @@ function GamePage() {
                     onClick={() => {
                       setSuspect(s);
                     }}
-                    src={`../assets/${s.imageCode}.jpeg`}
+                    src={`/images/${s.imageCode}.jpeg`}
                     className="object-cover h-100 w-100 shrink-0 grow-1 grayscale-100"
                   ></motion.img>
                 </Popover>
@@ -201,7 +201,7 @@ function GamePage() {
                   onClick={() => {
                     setSuspect(s);
                   }}
-                  src={`../assets/${s.imageCode}.jpeg`}
+                  src={`/images/${s.imageCode}.jpeg`}
                   className="object-cover h-100 w-100 shrink-0 grow-1"
                 ></motion.img>
               </Popover>

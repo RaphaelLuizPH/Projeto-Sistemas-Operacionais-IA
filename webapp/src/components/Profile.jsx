@@ -57,7 +57,7 @@ function Profile({ suspect }) {
           className=" min-w-full "
           avatar={
             <Avatar
-              src={`/src/assets/${suspect.imageCode}.jpeg`}
+              src={`/images/${suspect.imageCode}.jpeg`}
               shape="square"
               size="large"
             />
