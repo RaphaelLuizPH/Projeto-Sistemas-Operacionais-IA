@@ -37,17 +37,8 @@ jobs:
           path: ./publish
 
 
-      - name: Set API Keys in Azure App Settings
-        uses: azure/appservice-settings@v1
-        with:
-            app-name: 'InvestigaAi'
-            app-settings-json: |
-              {
-                "APIKey": "${{ secrets.GEMINI_KEY }}",
-                "APIUrl": "https://generativelanguage.googleapis.com",
-                "APIKey2": "${{ secrets.OPENAI_KEY }}",
-                "APIUrl2": "https://api.openai.com/v1/chat/completions"
-              }
+
+
 
 
   deploy:
@@ -74,11 +65,25 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B1514EC404524545AF8F0DDC27349706 }}
           auth-type: "SERVICE_PRINCIPAL"
 
+      - name: Set API Keys in Azure App Settings
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: 'InvestigaAi'
+          app-settings-json: |
+            {
+              "APIKey": "${{ secrets.GEMINI_KEY }}",
+              "APIUrl": "https://generativelanguage.googleapis.com",
+              "APIKey2": "${{ secrets.OPENAI_KEY }}",
+              "APIUrl2": "https://api.openai.com/v1/chat/completions"
+            }
+          mask-inputs: true
+
+      
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'InvestigaAi'
           slot-name: 'Production'
-          package: ./publish
+          package: .
           
