@@ -57,11 +57,12 @@ builder.Services.AddHostedService<GameService>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("Production", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins("https://proud-rock-0f29bc20f.6.azurestaticapps.net")
+            .AllowAnyHeader()
+             .AllowAnyMethod()
+             .AllowCredentials();
     });
 
 
@@ -75,15 +76,21 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+
+// Only add Swagger in development environment
+if (builder.Environment.IsDevelopment())
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    builder.Services.AddSwaggerGen(c =>
     {
-        Title = "Weather API",
-        Version = "v1",
-        Description = "A simple example ASP.NET Core Web API for weather forecasts"
+        c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+        {
+            Title = "InvestigaIA API",
+            Version = "v1",
+            Description = "API for the InvestigaIA game"
+        });
     });
-});
+}
+
 builder.Services.AddControllers();
 
 
@@ -91,8 +98,9 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.MapOpenApi();
-
 }
 
 app.MapControllers();
@@ -100,7 +108,7 @@ app.MapControllers();
 
 
 app.UseCors("AllowAll");
-
+app.UseCors("Production");
 app.UseSwagger();
 app.UseSwaggerUI();
 
