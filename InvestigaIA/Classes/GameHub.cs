@@ -15,9 +15,9 @@ namespace InvestigaIA.Classes
 
         public async Task EraseGame(string gameId)
         {
-            if (_gameManager.Games.ContainsKey(gameId))
+            if (_gameManager.Games.Remove(gameId))
             {
-                _gameManager.Games.Remove(gameId);
+
                 await Clients.Group(gameId).SendAsync("ReceiveMessage", $"Game {gameId} erased.");
             }
             else

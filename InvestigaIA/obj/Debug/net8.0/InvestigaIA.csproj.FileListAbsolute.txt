@@ -1,4 +1,3 @@
-F:\Code\Projeto Sistemas Operacionais IA\InvestigaIA\bin\Debug\net8.0\appsettings.json
 F:\Code\Projeto Sistemas Operacionais IA\InvestigaIA\bin\Debug\net8.0\InvestigaIA.exe
 F:\Code\Projeto Sistemas Operacionais IA\InvestigaIA\bin\Debug\net8.0\InvestigaIA.deps.json
 F:\Code\Projeto Sistemas Operacionais IA\InvestigaIA\bin\Debug\net8.0\InvestigaIA.runtimeconfig.json

@@ -23,7 +23,6 @@ function GamePage() {
   const [thinking, setThinking] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState("00:00");
   const connection = getConnection();
-  const [ended, setEnded] = useState(false);
 
   useEffect(() => {
     fetchGame();
@@ -31,7 +30,7 @@ function GamePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  useEffect(() => {}, [game]);
+ 
 
   // Connect to SignalR once
   useEffect(() => {
@@ -78,7 +77,7 @@ function GamePage() {
     connection.on("End", function (res) {
       if (!res) return;
       console.log("Game ended:", res);
-      setEnded(true);
+
       navigate(`/game/end/${id}/${res.suspect}`);
     });
 
@@ -134,7 +133,6 @@ function GamePage() {
 
       if (response.data.isRunning) {
         console.log("Game has already ended:", response.data.endGameStats);
-        setEnded(true);
         navigate(`/game/end/${id}/${response.data?.endGameStats?.acusado}`);
         return;
       }

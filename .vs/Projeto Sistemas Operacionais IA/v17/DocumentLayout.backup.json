@@ -71,8 +71,7 @@
               "RelativeToolTip": "InvestigaIA\\Classes\\GameInfo.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-09T01:32:14.726Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-09T01:32:14.726Z"
             },
             {
               "$type": "Document",
@@ -84,8 +83,7 @@
               "RelativeToolTip": "InvestigaIA\\Classes\\GameInstance.cs",
               "ViewState": "AgIAACgCAAAAAAAAAAAAADUCAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-09T01:32:12.222Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-09T01:32:12.222Z"
             },
             {
               "$type": "Document",
@@ -97,8 +95,7 @@
               "RelativeToolTip": "InvestigaIA\\API\\GeminiService.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-09T01:31:47.075Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-09T01:31:47.075Z"
             },
             {
               "$type": "Document",
@@ -110,8 +107,7 @@
               "RelativeToolTip": "webAPI\\Services\\GameService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-09T01:31:23.416Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-09T01:31:23.416Z"
             },
             {
               "$type": "Document",
@@ -123,8 +119,7 @@
               "RelativeToolTip": "webAPI\\Controllers\\GameController.cs",
               "ViewState": "AgIAACoAAAAAAAAAAAAAAEcAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-09T01:30:54.545Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-09T01:30:54.545Z"
             },
             {
               "$type": "Document",
@@ -136,8 +131,7 @@
               "RelativeToolTip": "webAPI\\Program.cs",
               "ViewState": "AgIAAE4AAAAAAAAAAAAAAFoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-09T01:30:17.353Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-09T01:30:17.353Z"
             }
           ]
         }
