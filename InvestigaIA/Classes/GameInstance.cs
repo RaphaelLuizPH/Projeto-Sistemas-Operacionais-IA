@@ -13,7 +13,7 @@ namespace InvestigaIA.Classes
 {
     public class GameInstance
     {
-        private bool _running = false;
+        public bool _running = false;
         private readonly GeminiService GeminiClient;
 
 
@@ -21,7 +21,7 @@ namespace InvestigaIA.Classes
 
         private SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly OpenAiService openAiService;
-
+        [JsonInclude]
         public EndGameStats endGameStats { get; set; }
         private readonly Random random1 = new();
         private readonly Random random2 = new();
@@ -217,6 +217,8 @@ namespace InvestigaIA.Classes
 
 
                     endGameStats = newStats;
+                    await _hubContext.Clients.Group(gameId).SendAsync("End", endGameStats);
+                    
                     return endGameStats;
                 }
 

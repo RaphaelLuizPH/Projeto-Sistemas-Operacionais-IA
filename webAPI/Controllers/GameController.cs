@@ -70,7 +70,7 @@ namespace webAPI.Controllers
                         gameInstance.CreatedAt,
                         Suspects = gameInstance.suspects,
                         Objectives = gameInstance._objectives,
-
+                        isRunning = gameInstance._running,
                         CaseFile = gameInstance._CaseFile,
 
                     };
@@ -126,6 +126,7 @@ namespace webAPI.Controllers
                     g.Key,
                     g.Value.CreatedAt,
                     title = g.Value._CaseFile is not null ? g.Value._CaseFile.Title : "Jogo não iniciado",
+                    g.Value.endGameStats
                 }).ToList());
             }
             catch (Exception ex)

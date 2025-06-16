@@ -7,10 +7,11 @@ import { useState, useEffect, useRef } from "react";
 const { Search } = Input;
 import { AnimatePresence, motion } from "motion/react";
 import Profile from "./Profile";
-function Chat({ suspect, setThinking, thinking, chatContainerRef }) {
+function Chat({ suspect, setThinking, thinking }) {
   // Ref for the chat container
   const { id } = useParams();
   const [message, setMessage] = useState([]);
+  const chatContainerRef = useRef(null);
   const { name, conversationHistory } = suspect;
   console.log("Chat component rendered with suspect:", suspect);
   const handleSendMessage = async (value) => {
@@ -82,7 +83,7 @@ function Chat({ suspect, setThinking, thinking, chatContainerRef }) {
                       sequence={[
                         () => showCursorAnimation(true),
                         message.parts[0].text,
-                        showCursorAnimation(false),
+                        () => showCursorAnimation(false),
                         () => {
                           if (chatContainerRef.current) {
                             chatContainerRef.current.scrollIntoView({

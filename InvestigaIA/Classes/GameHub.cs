@@ -12,11 +12,20 @@ namespace InvestigaIA.Classes
 
         private readonly GameManager _gameManager = gameManager;
 
-        public async Task SendMessage(string message, string gameId)
+
+        public async Task EraseGame(string gameId)
         {
-            // Example method for clients to send messages
-            await Clients.Group(gameId).SendAsync("ReceiveMessage", message);
+            if (_gameManager.Games.ContainsKey(gameId))
+            {
+                _gameManager.Games.Remove(gameId);
+                await Clients.Group(gameId).SendAsync("ReceiveMessage", $"Game {gameId} erased.");
+            }
+            else
+            {
+                await Clients.Group(gameId).SendAsync("ReceiveMessage", $"Game {gameId} not found.");
+            }
         }
+
 
         public async Task JoinGame(string gameId)
         {

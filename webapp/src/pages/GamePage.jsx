@@ -23,11 +23,15 @@ function GamePage() {
   const [thinking, setThinking] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState("00:00");
   const connection = getConnection();
-  const chatContainerRef = useRef(null);
+  const [ended, setEnded] = useState(false);
+
   useEffect(() => {
     fetchGame();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {}, [game]);
 
   // Connect to SignalR once
   useEffect(() => {
@@ -65,10 +69,17 @@ function GamePage() {
     connection.off("Response");
     connection.off("Objectives");
     connection.off("Conversation");
-
+    connection.off("End");
     // Set up new handlers with current closures
     connection.on("ReceiveMessage", function (message) {
       setTimeElapsed(message);
+    });
+
+    connection.on("End", function (res) {
+      if (!res) return;
+      console.log("Game ended:", res);
+      setEnded(true);
+      navigate(`/game/end/${id}/${res.suspect}`);
     });
 
     connection.on("Response", function (res) {
@@ -85,9 +96,7 @@ function GamePage() {
     connection.on("Conversation", function (data) {
       console.log("Conversation history received:", data);
       console.log("Current suspect state:", suspect);
-      const updatedSuspect = game.suspects.find(
-        (s) => s.name === data.name
-      );
+      const updatedSuspect = game.suspects.find((s) => s.name === data.name);
 
       if (updatedSuspect) {
         updatedSuspect.conversationHistory = data._conversationHistory;
@@ -109,6 +118,7 @@ function GamePage() {
     });
 
     return () => {
+      connection.off("End");
       connection.off("ReceiveMessage");
       connection.off("Response");
       connection.off("Objectives");
@@ -119,7 +129,15 @@ function GamePage() {
   const fetchGame = async () => {
     try {
       const response = await GetGame(id);
+
       setGame(response.data);
+
+      if (response.data.isRunning) {
+        console.log("Game has already ended:", response.data.endGameStats);
+        setEnded(true);
+        navigate(`/game/end/${id}/${response.data?.endGameStats?.acusado}`);
+        return;
+      }
     } catch (error) {
       console.error("Error fetching game:", error);
       navigate("/");
@@ -240,7 +258,6 @@ function GamePage() {
 
         {suspect && (
           <Chat
-            chatContainerRef={chatContainerRef}
             suspect={suspect}
             setThinking={setThinking}
             thinking={thinking}

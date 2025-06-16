@@ -10,7 +10,10 @@ const EndScreen = () => {
   const navigate = useNavigate();
   const [hasEnded, setHasEnded] = useState(false);
   const [stats, setStats] = useState(null);
+  const connection = getConnection();
+
   const handleRestart = () => {
+    connection.invoke("EraseGame", id);
     navigate("/");
   };
 
@@ -26,14 +29,41 @@ const EndScreen = () => {
   };
 
   useEffect(() => {
+
     handleEndGame();
+
+    if (connection.state === signalR.HubConnectionState.Connected) {
+      console.log("Already connected to SignalR");
+      return;
+    }
+
+    connection
+      .start()
+      .then(function () {
+        console.log("Connected to SignalR");
+        connection.invoke("JoinGame", id);
+      })
+      .catch((err) => console.error("SignalR Connection Error:", err));
+
+    return () => {
+      const disconnect = async () => {
+        try {
+          await connection.invoke("LeaveGame", id);
+          await connection.stop();
+          console.log("Disconnected and left game:", id);
+        } catch (err) {
+          console.error("Error during disconnect:", err);
+        }
+      };
+      disconnect();
+    };
   }, [id, suspect]);
 
   return (
     <>
       <div className="end-screen p-20 flex flex-col items-center justify-center h-fit min-h-screen  bg-secondary">
         <h1 className="font-exile text-white  text-[5rem]">Fim de jogo</h1>
-       {!hasEnded && <Loading time={200} />}
+        {!hasEnded && <Loading time={200} />}
         <Button
           type="primary"
           variant="filled"
