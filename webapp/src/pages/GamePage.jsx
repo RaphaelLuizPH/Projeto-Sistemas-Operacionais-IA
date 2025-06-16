@@ -30,8 +30,6 @@ function GamePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
- 
-
   // Connect to SignalR once
   useEffect(() => {
     if (connection.state === signalR.HubConnectionState.Connected) {
@@ -128,14 +126,17 @@ function GamePage() {
   const fetchGame = async () => {
     try {
       const response = await GetGame(id);
+      const data = response.data;
 
-      setGame(response.data);
+      console.log("Game fetched successfully:", data);
 
-      if (response.data.isRunning) {
-        console.log("Game has already ended:", response.data.endGameStats);
-        navigate(`/game/end/${id}/${response.data?.endGameStats?.acusado}`);
+      if (data?.endGameStats?.acusado) {
+        console.log("Game has already ended, redirecting to end page.");
+        navigate(`/game/end/${id}/${data.endGameStats.acusado.name}`);
         return;
       }
+
+      setGame(data);
     } catch (error) {
       console.error("Error fetching game:", error);
       navigate("/");

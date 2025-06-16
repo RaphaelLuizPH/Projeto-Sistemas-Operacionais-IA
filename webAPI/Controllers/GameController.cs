@@ -72,6 +72,7 @@ namespace webAPI.Controllers
                         Objectives = gameInstance._objectives,
                         isRunning = gameInstance._running,
                         CaseFile = gameInstance._CaseFile,
+                        EndGameStats = gameInstance.endGameStats,
 
                     };
                     return Ok(gameInfo);

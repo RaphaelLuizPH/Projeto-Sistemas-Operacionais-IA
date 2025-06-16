@@ -13,7 +13,7 @@ function Chat({ suspect, setThinking, thinking }) {
   const [message, setMessage] = useState([]);
   const chatContainerRef = useRef(null);
   const { name, conversationHistory } = suspect;
-  console.log("Chat component rendered with suspect:", suspect);
+
   const handleSendMessage = async (value) => {
     if (value.trim() === "") return;
     setThinking(true);
