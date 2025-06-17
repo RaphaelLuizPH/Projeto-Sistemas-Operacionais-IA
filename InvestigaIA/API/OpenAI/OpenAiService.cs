@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using InvestigaIA.API.OpenAI;
 using InvestigaIA.Classes;
@@ -17,7 +18,7 @@ namespace InvestigaIA.API
 
         }
 
-        public async Task<string> Ask(string prompt, Suspeito suspeito)
+        public async Task<MessageAnswer> Ask(string prompt, Suspeito suspeito)
         {
             var newMessage = new Message
             {
@@ -48,9 +49,14 @@ namespace InvestigaIA.API
 
             if (response.IsSuccessStatusCode)
             {
+
+
+
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 var candidates = System.Text.Json.JsonSerializer.Deserialize<OpenAiReponse>(jsonResponse);
-                return candidates.choices.FirstOrDefault()?.message.content ?? "No response received.";
+                var res = ResponseCleanUpUtility.CleanUpResponse(candidates.choices.FirstOrDefault()?.message.content);
+                var resObj = JsonSerializer.Deserialize<MessageAnswer>(res);
+                return resObj;
 
             }
 
@@ -58,7 +64,7 @@ namespace InvestigaIA.API
         }
 
 
-    
+
 
 
         public async Task<string> SendRequestAsync(string prompt)

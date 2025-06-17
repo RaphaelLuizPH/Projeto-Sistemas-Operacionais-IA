@@ -387,46 +387,54 @@ namespace InvestigaIA.Classes
         {
             string message;
 
-
-            if (suspectSelected.Name == _CaseFile.Culpado.Name)
-            {
-                message = GeneratePrompt(PromptType.Culprit, suspectSelected, question);
-
-
-            }
-            else if (suspectSelected.Name == _CaseFile.Victim.Name)
-            {
-                message = GeneratePrompt(PromptType.Victim, suspectSelected, question);
-
-
-            }
-            else
-            {
-                message = GeneratePrompt(PromptType.Suspect, suspectSelected, question);
-
-
-            }
-
-
-            var res = await openAiService.Ask(message, suspectSelected);
-            res = ResponseCleanUpUtility.CleanUpResponse(res);
+            suspectSelected._conversationHistory.AddRange(
+                new List<Content>
+                {
+                    new Content
+                    {
+                        role = "user",
+                        parts =
+                    [
+                        new Part { text = question }
+                    ]
+                    }
+                }
+            );
 
             try
             {
                 await _semaphore.WaitAsync();
-                var resObj = JsonSerializer.Deserialize<MessageAnswer>(res);
+
+                if (suspectSelected.Name == _CaseFile.Culpado.Name)
+                {
+                    message = GeneratePrompt(PromptType.Culprit, suspectSelected, question);
+
+
+                }
+                else if (suspectSelected.Name == _CaseFile.Victim.Name)
+                {
+                    message = GeneratePrompt(PromptType.Victim, suspectSelected, question);
+
+
+                }
+                else
+                {
+                    message = GeneratePrompt(PromptType.Suspect, suspectSelected, question);
+
+
+                }
+
+
+                var resObj = await openAiService.Ask(message, suspectSelected);
+
+
+
+
+
 
                 suspectSelected._conversationHistory.AddRange(
                 new List<Content>
                 {
-                new Content
-                {
-                role = "user",
-                parts =
-                [
-                new Part { text = question }
-                ]
-                },
                 new Content
                 {
                 role = "assistant",
@@ -498,6 +506,9 @@ namespace InvestigaIA.Classes
 
         public async Task<List<Content>> SendMessage(string question, Suspeito suspectSelected)
         {
+            string message;
+
+
             suspectSelected._conversationHistory.AddRange(
                 new List<Content>
                 {
@@ -520,18 +531,18 @@ namespace InvestigaIA.Classes
 
                 if (suspectSelected.Name == _CaseFile.Culpado.Name)
                 {
-                    var prompt = GeneratePrompt(PromptType.Culprit, suspectSelected, question);
-                    request = new APIRequest(prompt);
+                    message = GeneratePrompt(PromptType.Culprit, suspectSelected, question);
+                    request = new APIRequest(message);
                 }
                 else if (suspectSelected.Name == _CaseFile.Victim.Name)
                 {
-                    var prompt = GeneratePrompt(PromptType.Victim, suspectSelected, question);
-                    request = new APIRequest(prompt);
+                    message = GeneratePrompt(PromptType.Victim, suspectSelected, question);
+                    request = new APIRequest(message);
                 }
                 else
                 {
-                    var prompt = GeneratePrompt(PromptType.Suspect, suspectSelected, question);
-                    request = new APIRequest(prompt);
+                    message = GeneratePrompt(PromptType.Suspect, suspectSelected, question);
+                    request = new APIRequest(message);
                 }
 
                 var resObj = await GeminiClient.Ask(request, suspectSelected);
@@ -555,7 +566,7 @@ namespace InvestigaIA.Classes
 
                 }
 
-           
+
 
                 suspectSelected.StressLevel += 0.1d;
 
