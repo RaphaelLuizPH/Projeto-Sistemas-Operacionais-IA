@@ -5,7 +5,7 @@ function Loading({ time = 100 }) {
   const [percent, setPercent] = useState(0);
 
   const increasePercent = () => {
-    if (percent === 90) {
+    if (percent > 98) {
       return;
     }
 
