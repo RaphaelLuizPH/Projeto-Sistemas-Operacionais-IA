@@ -98,6 +98,7 @@ const EndScreen = () => {
               </div>
 
               <img
+                loading="lazy"
                 className="w-60 h-60 object-cover grayscale-100 ml-auto"
                 src={`/images/${stats?.caseFile.victim.imageCode}.webp`}
                 alt=""

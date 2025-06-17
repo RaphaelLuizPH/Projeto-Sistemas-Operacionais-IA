@@ -57,6 +57,7 @@ function Profile({ suspect }) {
           className=" min-w-full "
           avatar={
             <Avatar
+            
               src={`/images/${suspect.imageCode}.webp`}
               shape="square"
               size="large"

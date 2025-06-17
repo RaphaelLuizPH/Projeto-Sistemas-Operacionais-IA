@@ -8,8 +8,6 @@ import sleep from "../func/Sleep";
 import "./StartScreen.css";
 import Loading from "../components/Loading";
 
-
-
 function StartScreen() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -42,8 +40,6 @@ function StartScreen() {
   };
 
   const [open, setOpen] = useState(false);
-
-
 
   return (
     <>
@@ -89,6 +85,7 @@ function StartScreen() {
               .map((item) => item.k)
               .map((key) => (
                 <motion.img
+                  loading="lazy"
                   layoutId={key}
                   draggable={false}
                   src={`${images[key]}`}
