@@ -43,8 +43,8 @@ namespace webAPI.Controllers
                 var suspect = _gameManager.Games[id].suspects.FirstOrDefault(s => s.Name == suspectName);
 
 
-                var res = await _gameManager.Games[id].SendMessageGPT(message, suspect);
-
+                // var res = await _gameManager.Games[id].SendMessageGPT(message, suspect);
+                var res = await _gameManager.Games[id].SendMessage(message, suspect);
                 return Ok(res);
 
 

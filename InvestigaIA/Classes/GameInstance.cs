@@ -218,7 +218,7 @@ namespace InvestigaIA.Classes
 
                     endGameStats = newStats;
                     await _hubContext.Clients.Group(gameId).SendAsync("End", endGameStats);
-                    
+
                     return endGameStats;
                 }
 
@@ -534,17 +534,32 @@ namespace InvestigaIA.Classes
                     request = new APIRequest(prompt);
                 }
 
-                var answer = await GeminiClient.Ask(request, suspectSelected);
+                var resObj = await GeminiClient.Ask(request, suspectSelected);
 
-                var objetive = _objectives.TryGetValue(answer.Completed, out bool isCompleted);
 
-                if (objetive)
+
+                if (!string.IsNullOrEmpty(resObj.Completed))
                 {
-                    _objectives[answer.Completed] = true;
-                    await _hubContext.Clients.Group(gameId).SendAsync("Objectives", _objectives);
+
+
+                    if (_objectives.TryGetValue(resObj.Completed.Trim(), out bool value))
+                    {
+                        _objectives[resObj.Completed] = true;
+                        await _hubContext.Clients.Group(gameId).SendAsync("Objectives", _objectives);
+
+                        if (_objectives["Conseguir uma confissão do assassino"])
+                            _CaseFile.Culpado.Caught = true;
+
+                    }
+
+
                 }
 
+           
+
                 suspectSelected.StressLevel += 0.1d;
+
+                await _hubContext.Clients.Group(gameId).SendAsync("Conversation", new { suspectSelected.Name, suspectSelected._conversationHistory, suspectSelected.StressLevel });
 
                 return suspectSelected._conversationHistory;
 
