@@ -29,7 +29,6 @@ const EndScreen = () => {
   };
 
   useEffect(() => {
-
     handleEndGame();
 
     if (connection.state === signalR.HubConnectionState.Connected) {
@@ -100,7 +99,7 @@ const EndScreen = () => {
 
               <img
                 className="w-60 h-60 object-cover grayscale-100 ml-auto"
-                src={`/images/${stats?.caseFile.victim.imageCode}.jpeg`}
+                src={`/images/${stats?.caseFile.victim.imageCode}.webp`}
                 alt=""
               />
             </div>

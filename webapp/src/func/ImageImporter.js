@@ -9,11 +9,11 @@ function importAll() {
   for (var i = 0; i < 10; i++) {
     const female = `female${i + 1}`;
     const male = `male${i + 1}`;
-    let url = `/images/${female}.jpeg`;
+    let url = `/images/${female}.webp`;
 
     images[female] = url;
 
-    url = `/images/${male}.jpeg`;
+    url = `/images/${male}.webp`;
 
     images[male] = url;
   }
