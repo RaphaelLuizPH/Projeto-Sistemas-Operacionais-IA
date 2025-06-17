@@ -337,9 +337,10 @@ namespace InvestigaIA.Classes
                 objectives.Add("Conseguir uma confissão do assassino", false);
                 return objectives;
             }
-            catch
+            catch (Exception ex)
+
             {
-                throw new Exception(cleanedResponse);
+                throw new Exception(cleanedResponse + ex.Message + " - " + response);
             }
 
 
