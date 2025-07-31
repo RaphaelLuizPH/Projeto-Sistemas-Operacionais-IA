@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InvestigaIA")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4ec83fd18d8602693af9dfb468e74c1a84a21057")]
 [assembly: System.Reflection.AssemblyProductAttribute("InvestigaIA")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InvestigaIA")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

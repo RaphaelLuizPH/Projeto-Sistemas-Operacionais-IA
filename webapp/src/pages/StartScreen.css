@@ -1,0 +1,19 @@
+.menu li {
+  padding: 10px 24px;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-size: 2rem;
+  width: fit-content;
+  margin: auto;
+  transition: all 0.111s ease-in;
+}
+
+.menu li:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+  backdrop-filter: blur(16px);
+  border-bottom: #fff solid;
+}

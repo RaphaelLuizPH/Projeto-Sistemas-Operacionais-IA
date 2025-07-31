@@ -19,10 +19,10 @@ namespace InvestigaIA.API
 
         private List<Content> _conversationHistory = new List<Content>();
 
-        public GeminiService(string APIKey, string APIUrl)
+        public GeminiService(string APIKey, HttpClient HttpClient)
         {
             _APIKey = APIKey ?? throw new ArgumentNullException(nameof(APIKey));
-            _httpClient = HttpClienteFactory(APIUrl) ?? throw new ArgumentNullException("Failed to create HttpClient instance.");
+            _httpClient = HttpClient;
         }
 
         public async Task<APIResponse> SendRequestAsync(APIRequest request)
@@ -36,6 +36,7 @@ namespace InvestigaIA.API
                 var httpContent = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
 
                 var response = await _httpClient.PostAsync($"{_httpClient.BaseAddress}/v1beta/models/gemini-2.0-flash:generateContent?key={_APIKey}", httpContent);
+
                 response.EnsureSuccessStatusCode();
 
                 var responseBody = await response.Content.ReadFromJsonAsync<APIResponse>();
@@ -46,6 +47,10 @@ namespace InvestigaIA.API
                 return responseBody;
 
             }
+            catch (HttpRequestException httpEx) when (httpEx.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 // Log the exception or handle it as needed
@@ -57,12 +62,12 @@ namespace InvestigaIA.API
         }
 
 
-        public async Task<APIResponse> Ask(APIRequest request, Suspeito suspeito)
+        public async Task<MessageAnswer> Ask(APIRequest request, Suspeito suspeito)
         {
             try
             {
-                suspeito._conversationHistory.AddRange(request.contents);
-                request.contents = suspeito._conversationHistory;
+
+                request.contents.AddRange(suspeito._conversationHistory);
 
                 var jsonContent = JsonSerializer.Serialize(request);
                 var httpContent = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
@@ -71,10 +76,16 @@ namespace InvestigaIA.API
                 response.EnsureSuccessStatusCode();
 
                 var responseBody = await response.Content.ReadFromJsonAsync<APIResponse>();
-                
+
+                var cleanedResponse = ResponseCleanUpUtility.CleanUpResponse(responseBody.candidates[0].content.parts[0].text);
+
+                var messageResponse = JsonSerializer.Deserialize<MessageAnswer>(cleanedResponse);
+
+                responseBody.candidates[0].content.parts[0].text = messageResponse.Text;
+
                 suspeito._conversationHistory.Add(responseBody.candidates[0].content);
 
-                return responseBody;
+                return messageResponse;
 
             }
             catch (Exception ex)
@@ -89,21 +100,7 @@ namespace InvestigaIA.API
 
 
 
-        private HttpClient HttpClienteFactory(string APIUrl)
-        {
-            var client = new HttpClient
-            {
-                BaseAddress = new Uri(APIUrl)
 
-            };
-
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-
-
-            return client;
-
-
-        }
 
 
     }
