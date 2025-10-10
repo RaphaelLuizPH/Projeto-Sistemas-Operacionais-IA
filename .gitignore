@@ -11,7 +11,7 @@
 *.pyo
 *.pyd
 *.out
-
+.vs
 # Packages #
 ############
 *.7z
