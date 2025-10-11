@@ -1,4 +1,4 @@
-using InvestigaIA.Classes;
+
 using InvestigaIA.Model.Game;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -34,6 +34,25 @@ namespace webAPI.Controllers
         }
 
 
+        [HttpGet("/{id}")]
+
+        public async Task<IActionResult> GetGame(string id)
+        {
+            try
+            {
+              var game = _gameManager.GetGame(id);
+
+                return Ok(game);
+
+            } catch
+            {
+                return BadRequest(id);
+            }
+        }
+
+
+
+/*
         [HttpPost("Send/{id}", Name = "SendMessage")]
         public async Task<IActionResult> Send(string message, string id, string suspectName)
         {
@@ -41,10 +60,10 @@ namespace webAPI.Controllers
 
             try
             {
-                var suspect = _gameManager.Games[id].suspects.FirstOrDefault(s => s.Name == suspectName);
+                var suspect = _gameManager.Games[id].Suspects.FirstOrDefault(s => s.Name == suspectName);
 
 
-                 var res = await _gameManager.Games[id].SendMessageGPT(message, suspect);
+                 var res = await _gameManager.Games[id].(message, suspect);
                 //var res = await _gameManager.Games[id].SendMessage(message, suspect);
                 return Ok(res);
 
@@ -69,11 +88,11 @@ namespace webAPI.Controllers
                     var gameInfo = new
                     {
                         gameInstance.CreatedAt,
-                        Suspects = gameInstance.suspects,
+                        Suspects = gameInstance.Suspects,
                         Objectives = gameInstance._objectives,
                         isRunning = gameInstance._running,
-                        CaseFile = gameInstance._CaseFile,
-                        EndGameStats = gameInstance.endGameStats,
+                        CaseFile = gameInstance.CaseFile,
+                        EndGameStats = gameInstance.EndGameStats,
 
                     };
                     return Ok(gameInfo);
@@ -102,7 +121,7 @@ namespace webAPI.Controllers
 
 
                 await _gameManager.Games[id].StartGame();
-                return Ok(_gameManager.Games[id].suspects);
+                return Ok(_gameManager.Games[id].Suspects);
             }
             catch (Exception ex)
             {
@@ -127,8 +146,8 @@ namespace webAPI.Controllers
                 {
                     g.Key,
                     g.Value.CreatedAt,
-                    title = g.Value._CaseFile is not null ? g.Value._CaseFile.Title : "Jogo não iniciado",
-                    g.Value.endGameStats
+                    title = g.Value.CaseFile is not null ? g.Value.CaseFile.Title : "Jogo não iniciado",
+                    g.Value.EndGameStats
                 }).ToList());
             }
             catch (Exception ex)
@@ -152,7 +171,7 @@ namespace webAPI.Controllers
                     return NotFound(new { Message = "Game instance not found." });
                 }
 
-                var acusado = gameInstance.suspects.FirstOrDefault(s => s.Name == nome);
+                var acusado = gameInstance.Suspects.FirstOrDefault(s => s.Name == nome);
 
                 var res = await gameInstance.EndGame(acusado);
                 return Ok(res);
@@ -186,6 +205,6 @@ namespace webAPI.Controllers
 
         // }
 
-        // Add more endpoints as needed
+        */
     }
 }

@@ -2,7 +2,7 @@ using InvestigaIA.API;
 using InvestigaIA.API.Gemini;
 using InvestigaIA.Model.Game;
 using webAPI.Services;
-
+using Newtonsoft.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -34,14 +34,15 @@ builder.Logging.AddConsole();
 
 
 
+
+
 builder.Services.AddSingleton(sp =>
 {
     var config = builder.Configuration;
     string apiKey = config["APIKey"];
 
 
-    return new GeminiService(APIKey: apiKey,
-                             HttpClient: sp.GetRequiredService<IHttpClientFactory>().CreateClient("GeminiClient"));
+    return new GeminiService(APIKey: apiKey);
 });
 
 builder.Services.AddSingleton(sp =>
@@ -55,10 +56,10 @@ builder.Services.AddSingleton(sp =>
 
 builder.Services.AddHostedService<GameService>();
 
-// Configure CORS - single configuration for all policies
+
 builder.Services.AddCors(options =>
 {
-    // Production policy
+   
     options.AddPolicy("Production", policy =>
     {
         policy.WithOrigins("https://proud-rock-0f29bc20f.6.azurestaticapps.net")
@@ -67,7 +68,7 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 
-    // Local development policy
+
     options.AddPolicy("Development", policy =>
     {
         policy.WithOrigins("http://localhost:5173")
@@ -76,7 +77,7 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 
-    // Combined policy for multiple origins
+    
     options.AddPolicy("CombinedPolicy", policy =>
     {
         policy.WithOrigins(
@@ -103,7 +104,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(); 
 
 
 var app = builder.Build();

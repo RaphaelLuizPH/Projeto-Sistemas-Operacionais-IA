@@ -24,7 +24,7 @@ namespace InvestigaIA.Model.Game
         {
             get
             {
-                return Acusado != null && Acusado.Name == CaseFile.Culpado.Name;
+                return Acusado != null && Acusado.Name == CaseFile.Culprit.Name;
             }
         }
     }

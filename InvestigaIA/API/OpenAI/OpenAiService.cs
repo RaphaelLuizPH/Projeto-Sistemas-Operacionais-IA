@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using InvestigaIA.API.OpenAI;
 using InvestigaIA.Classes;
 using InvestigaIA.Model.Characters;
+using InvestigaIA.Model.Utilities;
+using TheInterrogatorAIDetective.Models.Utilities;
 
 namespace InvestigaIA.API
 {
@@ -29,7 +31,7 @@ namespace InvestigaIA.API
             };
 
 
-            var Messages = suspeito.conversationHistory.Select(c => c.Parts).SelectMany(p => p)
+            var Messages = suspeito.ConversationHistory.Select(c => c.Parts).SelectMany(p => p)
                  .Select(m => new Message
                  {
                      role = "user",
@@ -58,7 +60,7 @@ namespace InvestigaIA.API
                 var candidates = System.Text.Json.JsonSerializer.Deserialize<OpenAiReponse>(jsonResponse);
                 var res = ResponseCleanUpUtility.CleanUpResponse(candidates.choices.FirstOrDefault()?.message.content);
                 var resObj = JsonSerializer.Deserialize<MessageAnswer>(res);
-                return resObj;
+                return resObj.Text;
 
             }
 

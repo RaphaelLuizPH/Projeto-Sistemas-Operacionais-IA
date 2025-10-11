@@ -9,9 +9,12 @@ namespace InvestigaIA.Model.Characters
 
     public class Suspect 
     {
-        public Suspect(string name, string description, string systemPrompt) 
+        public Suspect(string name, string description, string systemPrompt, string imageCode) 
         {
-
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Description = description ?? throw new ArgumentNullException(nameof(description));
+            SystemPrompt = systemPrompt ?? throw new ArgumentNullException(nameof(systemPrompt));
+            ImageCode = imageCode ?? throw new ArgumentNullException(nameof(imageCode));
         }
 
 
@@ -25,9 +28,9 @@ namespace InvestigaIA.Model.Characters
 
         public string ImageCode { get; set; }
 
-        [JsonInclude]
+        [JsonIgnore]
         [JsonPropertyName("conversationHistory")]
-        public List<Content> conversationHistory { get; set; } = [];
+        public List<Content> ConversationHistory { get; set; } = [];
         public double StressLevel { get; set; } = 0.0d;
 
 

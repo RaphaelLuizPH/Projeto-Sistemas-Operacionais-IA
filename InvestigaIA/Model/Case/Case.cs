@@ -1,5 +1,4 @@
 // Models/CaseFile.cs
-using InvestigaIA.Classes;
 using InvestigaIA.Model.Characters;
 using Spectre.Console;
 using System.Collections.Generic;
@@ -29,12 +28,59 @@ namespace InvestigaIA.Model.Case
         /// </summary>
         public List<string> Evidence { get; set; }
 
+ 
         [JsonInclude]
-        public Suspect Victim { get; set; }
+        public Culprit Culprit { get; set; }
 
-        [JsonInclude]
-        public Culprit Culpado { get; set; }
 
+
+
+
+        public string Motivo;
+        public string Arma;
+
+        public string Local;
+
+       
+        public CaseFile(ref List<Suspect> suspects)
+        {
+
+            var random = new Random(); 
+            
+
+            var correctCulprit = suspects[random.Next(suspects.Count)];
+
+
+            Arma = armasDoCrime[random.Next(armasDoCrime.Count)];
+
+    
+
+            Motivo = motivosDoCrime[random.Next(motivosDoCrime.Count)];
+
+  
+
+            Local = Locais[random.Next(Locais.Count)];
+
+
+         
+            Title = $"O caso de Thomas Blackwood";
+            Culprit = new Culprit(correctCulprit.Name, correctCulprit.Description, correctCulprit.SystemPrompt, correctCulprit.ImageCode);
+            Motivo = motivosDoCrime[new Random().Next(motivosDoCrime.Count)];
+            Arma = armasDoCrime[new Random().Next(armasDoCrime.Count)];
+            Local = Locais[new Random().Next(Locais.Count)];
+
+
+            
+
+
+        }
+
+
+        public override string ToString()
+        {
+            return $"Na Mansão Blackwood, O Thomas S. Blackwood (Bilionário e patriarca da família) foi assassinado em {Local}. " +
+                $"{Culprit.Name} ({Culprit.Description})  matou a vítima com {Arma}. O motivo do crime foi {Motivo}. "; ;
+        }
 
         readonly List<string> armasDoCrime =
 [
@@ -120,34 +166,6 @@ namespace InvestigaIA.Model.Case
 "Salão de jogos",
 "Cinema particular"
 };
-
-
-        public string Motivo;
-        public string Arma;
-
-        public string Local;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CaseFile"/> class.
-        /// </summary>
-
-        /// <param name="victim">The victim of the crime.</param>
-        /// <param name="correctCulpritName">The name of the actual culprit.</param>
-        public CaseFile(Suspect victim, Culprit correctCulpritName, List<Suspect> suspects)
-        {
-
-            Victim = victim;
-            Title = $"O caso de {victim.Name}";
-            Culpado = correctCulpritName;
-            Motivo = motivosDoCrime[new Random().Next(motivosDoCrime.Count)];
-            Arma = armasDoCrime[new Random().Next(armasDoCrime.Count)];
-            Local = Locais[new Random().Next(Locais.Count)];
-        }
-
-
-
-
-
 
 
         /// <summary>

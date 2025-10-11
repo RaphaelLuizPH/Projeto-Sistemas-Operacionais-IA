@@ -89,6 +89,30 @@ namespace InvestigaIA.API.Gemini
 
 
 
+
+
+        public async Task<string> SendRequestAsync(string prompt)
+        {
+            try
+            {
+                var content = new Content(prompt, "user");
+                var chat = _model.StartChat(contents);
+                var response = await chat.GenerateContentAsync(new GenerateContentRequest([content]));
+                return response.Text;
+            }
+            catch (HttpRequestException httpEx) when (httpEx.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
+
+
         public async Task<MessageAnswer> SendRequestAsync(string prompt, Suspect suspect) 
         {
             try

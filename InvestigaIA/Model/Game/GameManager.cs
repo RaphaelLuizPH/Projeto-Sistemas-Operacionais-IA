@@ -11,22 +11,21 @@ namespace InvestigaIA.Model.Game
 {
     public class GameManager
     {
-        private GeminiService _geminiClient;
+       
         private IServiceProvider _provider;
-        public GameManager(GeminiService geminiClient, IServiceProvider provider)
+        public GameManager(IServiceProvider provider)
         {
             _provider = provider;
 
-            _geminiClient = geminiClient;
         }
 
         public Dictionary<string, GameInstance> Games = new();
 
         public GameInstance? GetGame(string id)
         {
-            if (Games.ContainsKey(id))
+            if (Games.TryGetValue(id, out GameInstance? value))
             {
-                return Games[id];
+                return value;
             }
             return null;
         }
@@ -43,7 +42,7 @@ namespace InvestigaIA.Model.Game
         {
             var id = Ulid.NewUlid().ToString();
 
-           // Games.Add(id, new GameInstance(_provider.GetRequiredService<GeminiService>(), id, _provider.GetRequiredService<IHubContext<GameHub>>(), _provider.GetRequiredService<OpenAiService>()));
+           Games.Add(id, new GameInstance(_provider.GetRequiredService<GeminiService>(), id, _provider.GetRequiredService<IHubContext<GameHub>>()));
         }
 
 
