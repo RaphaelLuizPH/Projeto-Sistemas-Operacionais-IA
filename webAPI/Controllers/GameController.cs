@@ -1,4 +1,5 @@
 using InvestigaIA.Classes;
+using InvestigaIA.Model.Game;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 

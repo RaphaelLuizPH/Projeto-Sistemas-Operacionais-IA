@@ -1,5 +1,6 @@
 using InvestigaIA.API;
-using InvestigaIA.Classes;
+using InvestigaIA.API.Gemini;
+using InvestigaIA.Model.Game;
 using webAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,7 +36,7 @@ builder.Logging.AddConsole();
 
 builder.Services.AddSingleton(sp =>
 {
-    var config = sp.GetRequiredService<IConfiguration>();
+    var config = builder.Configuration;
     string apiKey = config["APIKey"];
 
 
@@ -45,7 +46,6 @@ builder.Services.AddSingleton(sp =>
 
 builder.Services.AddSingleton(sp =>
 {
-    var config = sp.GetRequiredService<IConfiguration>();
 
 
     return new OpenAiService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("OpenAIClient"));

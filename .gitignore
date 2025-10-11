@@ -280,3 +280,8 @@ yarn-error.log*
 /InvestigaIA/obj/Release/net8.0/InvestigaIA.csproj.AssemblyReference.cache
 /InvestigaIA/obj/Release/net8.0/InvestigaIA.GeneratedMSBuildEditorConfig.editorconfig
 /InvestigaIA/obj/Release/net8.0/InvestigaIA.GlobalUsings.g.cs
+/webAPI/obj/project.assets.json
+/webAPI/obj/project.nuget.cache
+/webAPI/obj/webAPI.csproj.nuget.dgspec.json
+/webAPI/obj/webAPI.csproj.nuget.g.props
+/webAPI/obj/webAPI.csproj.nuget.g.targets

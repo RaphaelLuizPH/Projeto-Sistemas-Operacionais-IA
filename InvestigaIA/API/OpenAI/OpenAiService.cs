@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using InvestigaIA.API.OpenAI;
 using InvestigaIA.Classes;
+using InvestigaIA.Model.Characters;
+
 namespace InvestigaIA.API
 {
     public class OpenAiService
@@ -17,7 +19,7 @@ namespace InvestigaIA.API
 
         }
 
-        public async Task<string> Ask(string prompt, Suspeito suspeito)
+        public async Task<string> Ask(string prompt, Suspect suspeito)
         {
             var newMessage = new Message
             {
@@ -26,11 +28,11 @@ namespace InvestigaIA.API
             };
 
 
-            var Messages = suspeito._conversationHistory.Select(c => c.parts).SelectMany(p => p)
+            var Messages = suspeito.conversationHistory.Select(c => c.Parts).SelectMany(p => p)
                  .Select(m => new Message
                  {
                      role = "user",
-                     content = m.text
+                     content = m.Text
                  }).ToList();
 
             Messages.Add(newMessage);

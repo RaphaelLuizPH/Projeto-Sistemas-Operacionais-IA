@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace InvestigaIA.Classes
+namespace InvestigaIA.Model.Characters
 {
-    public class Culprit(string nome, string description, string systemPrompt) : Suspeito(nome, description, systemPrompt)
+    public class Culprit(string nome, string description, string systemPrompt) : Suspect(nome, description, systemPrompt)
     {
         [JsonInclude]
         public bool Caught = false;

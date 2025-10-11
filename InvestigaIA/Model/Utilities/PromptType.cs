@@ -1,4 +1,4 @@
-namespace InvestigaIA.Classes
+namespace TheInterrogatorAIDetective.Models.Utilities
 {
     public enum PromptType
     {

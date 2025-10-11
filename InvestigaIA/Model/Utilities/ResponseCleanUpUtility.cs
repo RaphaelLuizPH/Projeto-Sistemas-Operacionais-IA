@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace InvestigaIA.Classes
+namespace TheInterrogatorAIDetective.Models.Utilities
 {
     public static class ResponseCleanUpUtility
     {

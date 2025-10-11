@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 
 namespace InvestigaIA.Classes
 {
-
-    public class Content
+/*  public class Content
     {
         public string role { get; set; } = "user"; 
 
@@ -82,7 +81,7 @@ namespace InvestigaIA.Classes
 
 
 
-
+    */
 
 
 }

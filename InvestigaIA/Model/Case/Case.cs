@@ -1,11 +1,12 @@
 // Models/CaseFile.cs
 using InvestigaIA.Classes;
+using InvestigaIA.Model.Characters;
 using Spectre.Console;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization; // Required for LINQ operations like Select
 
-namespace TheInterrogatorAIDetective.Models
+namespace InvestigaIA.Model.Case
 {
     /// <summary>
     /// Represents the details of the crime case that the player needs to solve.
@@ -29,7 +30,7 @@ namespace TheInterrogatorAIDetective.Models
         public List<string> Evidence { get; set; }
 
         [JsonInclude]
-        public Suspeito Victim { get; set; }
+        public Suspect Victim { get; set; }
 
         [JsonInclude]
         public Culprit Culpado { get; set; }
@@ -132,7 +133,7 @@ namespace TheInterrogatorAIDetective.Models
 
         /// <param name="victim">The victim of the crime.</param>
         /// <param name="correctCulpritName">The name of the actual culprit.</param>
-        public CaseFile(Suspeito victim, Culprit correctCulpritName, List<Suspeito> suspects)
+        public CaseFile(Suspect victim, Culprit correctCulpritName, List<Suspect> suspects)
         {
 
             Victim = victim;

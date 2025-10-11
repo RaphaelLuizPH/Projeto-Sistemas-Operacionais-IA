@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using InvestigaIA.API;
+using InvestigaIA.API.Gemini;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace InvestigaIA.Classes
+namespace InvestigaIA.Model.Game
 {
     public class GameManager
     {
@@ -42,10 +43,14 @@ namespace InvestigaIA.Classes
         {
             var id = Ulid.NewUlid().ToString();
 
-            Games.Add(id, new GameInstance(_provider.GetRequiredService<GeminiService>(), id, _provider.GetRequiredService<IHubContext<GameHub>>(), _provider.GetRequiredService<OpenAiService>()));
+           // Games.Add(id, new GameInstance(_provider.GetRequiredService<GeminiService>(), id, _provider.GetRequiredService<IHubContext<GameHub>>(), _provider.GetRequiredService<OpenAiService>()));
         }
 
 
 
     }
 }
+
+
+
+
