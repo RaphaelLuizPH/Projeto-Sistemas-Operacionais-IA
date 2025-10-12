@@ -14,7 +14,7 @@ namespace InvestigaIA.Model.Utilities
 
         public string Completed { get; set; } 
 
-        public string NewObjectives { get; set; } 
+        public ObjectiveDTO NewObjectives { get; set; } 
 
 
 

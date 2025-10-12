@@ -16,7 +16,8 @@ namespace InvestigaIA.API.Gemini
         private readonly string _APIKey;
         private readonly GeminiModel _model;
         private readonly List<Content> contents = [];
-        private List<Content> _conversationHistory = new List<Content>();
+   
+
 
         public GeminiService(string APIKey)
         {
@@ -25,16 +26,25 @@ namespace InvestigaIA.API.Gemini
             var googleAI = new GoogleAi(apiKey: APIKey);
             _model = googleAI.CreateGeminiModel("gemini-2.0-flash");
 
+            _model.SystemInstruction = "Você é um agente de IA dentro de um jogo de mistério. " +
+                "Quando for dito que você é um personagem, responda como um personagem do jogo, mantendo a consistência da personalidade, " +
+                "emoções e motivações. Nunca admita ser uma IA ou que está em um jogo. Mantenha as respostas concisas, " +
+                "mas detalhadas o suficiente para parecerem naturais. Evite respostas excessivamente longas ou genéricas.";
+                
 
+                _model.UseJsonMode = true; 
 
         }
 
         public async Task<T> SendRequestAsync<T>(string prompt) where T : class
         {
+
+          
+
             try
             {
 
-
+               
 
 
 
@@ -46,7 +56,7 @@ namespace InvestigaIA.API.Gemini
                     ResponseSchema = GoogleSchemaHelper.ConvertToSchema<T>(),
                 };
 
-                var content = new Content(prompt, "user");
+                var content = new Content(prompt, "system");
 
 
 
@@ -93,9 +103,12 @@ namespace InvestigaIA.API.Gemini
 
         public async Task<string> SendRequestAsync(string prompt)
         {
+
+           
+
             try
             {
-                var content = new Content(prompt, "user");
+                var content = new Content(prompt, "system");
                 var chat = _model.StartChat(contents);
                 var response = await chat.GenerateContentAsync(new GenerateContentRequest([content]));
                 return response.Text;
@@ -154,14 +167,9 @@ namespace InvestigaIA.API.Gemini
 
                 **Instruções de Saída (Formato):**
                 - Inclui um campo 'Completed' para sua resposta. Se um objetivo for completo, adicionei seu Id no campo 'Completed'. Caso contrário, deixe-o vazio ou nulo.
-                - Inclui uma List<Objective> 'NewObjectives' para quaisquer novos objetivos que o jogador desbloqueou com esta interação. Se nenhum, deixe a lista vazia.
+                - Inclui um campo'NewObjectives' para quaisquer novos objetivos que o jogador desbloqueou com esta interação. Se nenhum, deixe vazio.
                 - Não inclua nada além da resposta do personagem no campo Text.
                 - Use os IDs desta lista: {string.Join(",", objectives)}.
-
-                **Pergunta do Detetive:**
-                {prompt}
-
-               
             ";
 
 
@@ -169,15 +177,17 @@ namespace InvestigaIA.API.Gemini
 
 
 
-                var content = new Content(promptWithContext, "user");
+                var sysContent = new Content(promptWithContext, "system");
+                var content = new Content(prompt, "user");
 
 
 
-                var chat = _model.StartChat(suspect.ConversationHistory);
+
+                var chat = _model.StartChat(suspect.ConversationHistory, systemInstruction: promptWithContext);
+                
 
 
-
-                var genContentRequest = new GenerateContentRequest([content], generationConfig: genConfig);
+                var genContentRequest = new GenerateContentRequest([sysContent, content], generationConfig: genConfig);
 
                 var response = await chat.GenerateContentAsync(genContentRequest); ;
 
@@ -191,7 +201,7 @@ namespace InvestigaIA.API.Gemini
             {
 
 
-                throw;
+                throw new Exception(httpEx.Message + ": Serviço Gemini indisponível ou esgotado " + httpEx.StatusCode);
             }
             catch (Exception ex)
             {
@@ -203,6 +213,15 @@ namespace InvestigaIA.API.Gemini
 
 
 
+       public void ConfigureModel(string? language)
+        {
+
+            if(!string.IsNullOrEmpty(language))
+            {
+                _model.SystemInstruction += $"Answer in {language}";
+            }
+
+        }
 
 
 

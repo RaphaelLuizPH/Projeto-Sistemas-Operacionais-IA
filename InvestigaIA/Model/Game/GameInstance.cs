@@ -62,6 +62,8 @@ namespace InvestigaIA.Model.Game
 
             Objectives = _gameService.CreateObjectives(CaseFile).Result;
 
+            _geminiService.ConfigureModel("en-Us");
+
         }
 
 

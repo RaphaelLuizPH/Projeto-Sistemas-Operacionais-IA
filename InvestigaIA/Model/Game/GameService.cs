@@ -28,10 +28,10 @@ namespace InvestigaIA.Model.Game
                 var objectives = await geminiService.SendRequestAsync<List<ObjectiveDTO>>($@"Com base no seguinte enredo de assassinato, crie uma lista de objetivos de jogo que guiem o jogador a resolver o mistério.
 
     **Enredo do Jogo:**
-    (Insira aqui o enredo detalhado que a IA gerou anteriormente)
+    {caseFile.CrimeDetails}
 
     **Sua Tarefa:**
-    Crie uma lista de objetivos que o jogador deve cumprir para identificar o assassino. A lista deve ser projetada para ser exibida na interface do jogo.
+    Crie objetivos inicias (3) que o jogador deve cumprir para identificar o assassino. A lista deve ser projetada para ser exibida na interface do jogo. Cada objetivo deve desbloquear o próximo.
 
     **Regras para os Objetivos:**
     1.  **Formato:** Cada objetivo deve ser uma frase curta e direta, sem revelar a trama. Os objetivos devem ser alcançados através de interrogatórios.
@@ -73,7 +73,7 @@ namespace InvestigaIA.Model.Game
     O cenário é a Mansão Blackwood, e o patriarca da família foi assassinado.
 
     **Personagens Suspeitos:**
-    {{String.Join("";"", suspects.Select(s => new {{ s.Name, s.Description }}))}}
+    {String.Join("", suspects.Select(s => new { s.Name, s.Description }))}
 
     **Sua Tarefa:**
     Crie um enredo de assassinato que possa ser resolvido por um jogador através de interrogatórios. O enredo deve ser lógico e conter todas as informações necessárias para a resolução.
