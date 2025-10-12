@@ -6,7 +6,7 @@ using InvestigaIA.Model.Game;
 
 namespace webAPI.Services
 {
-    public class GameService : BackgroundService
+    public class GameCleanUpService : BackgroundService
     {
 
         private readonly GameManager _gameManager;
@@ -15,7 +15,7 @@ namespace webAPI.Services
 
 
 
-        public GameService(GameManager gameManager)
+        public GameCleanUpService(GameManager gameManager)
         {
             _gameManager = gameManager;
         }
@@ -25,12 +25,17 @@ namespace webAPI.Services
         {
 
 
-            _gameManager.Init();
+           var runningsGames = _gameManager.Games.Where(g => (g.Value.CreatedAt - DateTime.Now) > TimeSpan.FromHours(4));
 
-            // while (!stoppingToken.IsCancellationRequested)
-            // {
-            //     await Task.Delay(1000, stoppingToken);
-            // }
+
+            foreach (var game in runningsGames)
+            {
+               
+                 game.Value.Dispose();
+                _gameManager.Games.Remove(game.Key);
+                
+            }
+
         }
 
     }

@@ -26,6 +26,7 @@ namespace InvestigaIA.Model.Characters
         public string Description { get; set; }
         public string SystemPrompt { get; set; }
 
+        public int Id { get; set; }
         public string ImageCode { get; set; }
 
         [JsonIgnore]

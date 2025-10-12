@@ -36,13 +36,12 @@ namespace InvestigaIA.Model.Case
 
 
 
-        public string Motivo;
-        public string Arma;
+        public string Motive { get; set; }
+        public string Weapon { get; set; }
+        public string Location { get; set; }
 
-        public string Local;
 
-       
-        public CaseFile(ref List<Suspect> suspects)
+        public CaseFile(List<Suspect> suspects)
         {
 
             var random = new Random(); 
@@ -51,23 +50,23 @@ namespace InvestigaIA.Model.Case
             var correctCulprit = suspects[random.Next(suspects.Count)];
 
 
-            Arma = armasDoCrime[random.Next(armasDoCrime.Count)];
+            Weapon = CrimeWeapons[random.Next(CrimeWeapons.Count)];
 
     
 
-            Motivo = motivosDoCrime[random.Next(motivosDoCrime.Count)];
+            Motive = crimeMotives[random.Next(crimeMotives.Count)];
 
   
 
-            Local = Locais[random.Next(Locais.Count)];
+            Location = Locations[random.Next(Locations.Count)];
 
 
          
             Title = $"O caso de Thomas Blackwood";
-            Culprit = new Culprit(correctCulprit.Name, correctCulprit.Description, correctCulprit.SystemPrompt, correctCulprit.ImageCode);
-            Motivo = motivosDoCrime[new Random().Next(motivosDoCrime.Count)];
-            Arma = armasDoCrime[new Random().Next(armasDoCrime.Count)];
-            Local = Locais[new Random().Next(Locais.Count)];
+            Culprit = new Culprit(correctCulprit.Name, correctCulprit.Description, correctCulprit.SystemPrompt, correctCulprit.ImageCode) { Id = correctCulprit.Id };
+            Motive = crimeMotives[new Random().Next(crimeMotives.Count)];
+            Weapon = CrimeWeapons[new Random().Next(CrimeWeapons.Count)];
+            Location = Locations[new Random().Next(Locations.Count)];
 
 
             
@@ -78,11 +77,11 @@ namespace InvestigaIA.Model.Case
 
         public override string ToString()
         {
-            return $"Na Mansão Blackwood, O Thomas S. Blackwood (Bilionário e patriarca da família) foi assassinado em {Local}. " +
-                $"{Culprit.Name} ({Culprit.Description})  matou a vítima com {Arma}. O motivo do crime foi {Motivo}. "; ;
+            return $"Na Mansão Blackwood, O Thomas S. Blackwood (Bilionário e patriarca da família) foi assassinado em {Location}. " +
+                $"{Culprit.Name} ({Culprit.Description})  matou a vítima com {Weapon}. O motivo do crime foi {Motive}. "; ;
         }
 
-        readonly List<string> armasDoCrime =
+        readonly List<string> CrimeWeapons =
 [
 "Faca de cozinha",
     "Revolver",
@@ -113,7 +112,7 @@ namespace InvestigaIA.Model.Case
 ];
 
 
-        readonly List<string> motivosDoCrime = new()
+        readonly List<string> crimeMotives = new()
         {
     "Herança disputada",
     "Ciúmes amoroso",
@@ -138,7 +137,7 @@ namespace InvestigaIA.Model.Case
 };
 
 
-        readonly List<string> Locais = new()
+        readonly List<string> Locations = new()
         {
 "Sala de estar",
 "Biblioteca",

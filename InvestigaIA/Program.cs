@@ -16,7 +16,7 @@ var res = await gemini.SendRequestAsync <List<SuspectDTO>>(@"Crie 10 personagens
            um valor para ImageCode, que deve ser o sexo do personagem + um numero de 1 a 10. (por exemplo: male1, female2, etc. em ordem aleatória, não linear).");
 
 
-var suspects = res.Select(s => new Suspect()
+var Suspects = res.Select(s => new Suspect()
 {
     Name = s.Name,
     Description = s.Description,
@@ -25,7 +25,6 @@ var suspects = res.Select(s => new Suspect()
 }).ToList();
 
 
-var message = await gemini.SendRequestAsync("Olá, como se chama?", suspects.First());
+//var message = await gemini.SendRequestAsync("Olá, como se chama?", Suspects.First());
 
 
-Console.WriteLine(message.Text);

@@ -13,13 +13,25 @@ namespace InvestigaIA.Model.Game
     {
        
         private IServiceProvider _provider;
-        public GameManager(IServiceProvider provider)
-        {
-            _provider = provider;
 
-        }
+        private GeminiService _geminiService;
+
+        private IHubContext<GameHub> _hubContext;
+
+        private GameService _gameService;
 
         public Dictionary<string, GameInstance> Games = new();
+
+
+        public GameManager(IServiceProvider provider, IHubContext<GameHub> hubContext, GeminiService geminiService, GameService gameService)
+        {
+            _provider = provider;
+            _hubContext = hubContext;
+            _geminiService = geminiService;
+            _gameService = gameService;
+        }
+
+
 
         public GameInstance? GetGame(string id)
         {
@@ -42,7 +54,7 @@ namespace InvestigaIA.Model.Game
         {
             var id = Ulid.NewUlid().ToString();
 
-           Games.Add(id, new GameInstance(_provider.GetRequiredService<GeminiService>(), id, _provider.GetRequiredService<IHubContext<GameHub>>()));
+           Games.Add(id, new GameInstance(_geminiService, id, _hubContext, _gameService));
         }
 
 

@@ -7,154 +7,78 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using System.Linq;
 using Newtonsoft.Json;
+using InvestigaIA.Model.Utilities;
 
 
 
 namespace InvestigaIA.Model.Game
 {
-    public class GameInstance
+    public class GameInstance : IDisposable
     {
 
-        private readonly GeminiService geminiService;
+        private readonly GeminiService _geminiService;
 
+        private readonly GameService _gameService;
 
         private readonly OpenAiService openAiService;
 
-      
+       
         public EndGameStats EndGameStats { get; set; }
 
-        public  Dictionary<string, List<string>> Evidences { get; set; } = new();
-        public List<Suspect> Suspects { get => suspects; set => suspects = value; }
+        public Dictionary<string, List<string>> Evidences { get; set; } = new();
+        public List<Suspect> Suspects { get; set; }
 
         public CaseFile CaseFile { get; set; }
 
-  
+
         public List<Objective> Objectives { get; set; }
 
         public DateTime CreatedAt { get; } = DateTime.Now;
 
         private readonly IHubContext<GameHub> _hubContext;
-
-        [JsonIgnore]
-        private List<Suspect> suspects = [];
+        private bool disposedValue;
 
         private string GameId { get; set; }
 
 
-        public GameInstance(GeminiService service, string _gameId, IHubContext<GameHub> hubContext)
+        public GameInstance(GeminiService service, string _gameId, IHubContext<GameHub> hubContext, GameService gameService)
         {
-       
 
-            geminiService = service;
+
+            _geminiService = service;
 
             GameId = _gameId;
 
             _hubContext = hubContext;
 
+            _gameService = gameService;
 
-            suspects = CharacterSet.suspects;
-
-
-            CaseFile = new CaseFile(ref suspects);
-
-            CaseFile.CrimeDetails = CreateCaseStory().Result;
-
-            Objectives = CreateObjectives().Result;
-
-        }
+            Suspects = CharacterSet.suspects;
 
 
+            CaseFile = new CaseFile(Suspects);
 
-        public async Task<List<Suspect>> CreateSuspects()
-        {
+            CaseFile.CrimeDetails = _gameService.CreateCaseStory(CaseFile, Suspects).Result;
 
-            try
-            {
-                var suspectsDTOs = await geminiService.SendRequestAsync<List<SuspectDTO>>($@"Crie 8 personagens para um jogo de detetive que passa numa mansão (a mansão Blackwood). Cada personagem deve ter um nome, descrição e prompt de sistema.
-           O prompt de sistema deve ser uma frase curta que descreve o papel do personagem no jogo. VocÊ não deve colocar o apelido de personagens entre aspas e nem utilizar aspas de modo que quebre o JSON.
-           Os personagens devem ser únicos e interessantes, com diferentes origens e personalidades. Não defina o papel do personagem (como vítima, jogador, assassino). Você deve fornecer
-           um valor para ImageCode, que deve ser o sexo do personagem + um numero de 1 a 8. (por exemplo: male1, female2, etc. em ordem aleatória, não linear).");
-
-
-                Suspects = [.. suspectsDTOs.Select(s => new Suspect()
-                {
-                    Name = s.Name,
-                    Description = s.Description,
-                    SystemPrompt = s.SystemPrompt,
-                    ImageCode = s.ImageCode,
-                    StressLevel = 0.0
-
-                })];
-
-                return Suspects;
-            }
-            catch
-            {
-                throw;
-            }
-
+            Objectives = _gameService.CreateObjectives(CaseFile).Result;
 
         }
 
 
 
-        public async Task<List<Objective>> CreateObjectives()
+
+
+        public async Task<MessageAnswer> Ask(string prompt, string suspectId)
         {
             try
             {
-                var objectives = await geminiService.SendRequestAsync<List<Objective>>($@"Baseado nos personagens criados, crie uma lista de objetivos que o jogador deve cumprir para resolver o mistério do assassinato. Todos os objetivos devem ser
-                       alcançados através de interrogatórios com os personagens e guiar o jogador ao culpado, este é o roteiro: {CaseFile.CrimeDetails}. Os objetivos não devem revelar partes da trama.");
-
-
-                return objectives;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-
-        public async Task<CaseFile> CreateCaseFile()
-        {
-
-            try
-            {
-               var caseFile = await geminiService.SendRequestAsync<CaseFile>($@"Na Mansão Blackwood, 
-                O patriarca da mansão foi assinado, com base nos seguintes personagens 
-                crie um enredo sobre como ocorreu o crime de forma que o jogador seja capaz de desventar o crime através de interrogatórios. 
-                {String.Join(";", suspects.Select(s => new { s.Name, s.Description }))  }. ");
-
-
-                return caseFile;
-
-            } catch(Exception ex)
-            {
-                throw;
-            }
 
 
 
-        }
+                var response = await _geminiService.SendRequestAsync(prompt, suspectId, this);
 
 
-        public async Task<string> CreateCaseStory()
-        {
-
-            try
-            {
-                var caseFile = await geminiService.SendRequestAsync($@"
-                {CaseFile.ToString()}
-                O patriarca da mansão foi assassinado, com base nos seguintes personagens 
-                preencha crie o O Enredo do caso de forma que o jogador seja capaz de desventar o 
-                crime através de interrogatórios. 
-                Não precisa explicar o que é o jogo nem repetir a descrição de nenhum personagem. 
-                Apenas crie a história do crime do inicio ao fim seguindo a descrição curta. 
-                Exemplo: O personagem X estava na biblioteca quando ouviu um tiro, etc, etc.
-                { JsonConvert.SerializeObject(suspects.Select(s => new { s.Name, Description = s.Description[..100] }))  }. ");
-
-
-                return caseFile;
+                return response;
 
             }
             catch (Exception ex)
@@ -163,10 +87,36 @@ namespace InvestigaIA.Model.Game
             }
 
 
-
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                }
 
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~GameInstance()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
 
 
         /*     private string GeneratePrompt(PromptType type)
@@ -244,4 +194,4 @@ namespace InvestigaIA.Model.Game
 
     }
 
-}
+    }

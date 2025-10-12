@@ -11,10 +11,26 @@ namespace InvestigaIA.Model.Game
 
         public string MainObjective { get; set; }
 
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public bool Completed { get; set; } = false;
 
-        public bool Hidden { get; set; } = true;
+ 
+        public override string ToString()
+        {
+            return MainObjective + "\t" + Id;
+        }
+
+    }
+
+
+    public class ObjectiveDTO
+    {
+
+        public string MainObjective { get; set; }
+
+
+
 
     }
 }

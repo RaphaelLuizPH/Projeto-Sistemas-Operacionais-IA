@@ -285,3 +285,4 @@ yarn-error.log*
 /webAPI/obj/webAPI.csproj.nuget.dgspec.json
 /webAPI/obj/webAPI.csproj.nuget.g.props
 /webAPI/obj/webAPI.csproj.nuget.g.targets
+/.vs/VSWorkspaceState.json

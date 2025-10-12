@@ -1,8 +1,8 @@
 using InvestigaIA.API;
 using InvestigaIA.API.Gemini;
 using InvestigaIA.Model.Game;
-using webAPI.Services;
 using Newtonsoft.Json;
+using webAPI.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -32,9 +32,9 @@ builder.Services.AddHttpClient<OpenAiService>("OpenAIClient", client =>
 builder.Logging.AddConsole();
 
 
+builder.Services.AddSingleton<GameService>();
 
-
-
+builder.Services.AddHostedService<GameCleanUpService>();
 
 builder.Services.AddSingleton(sp =>
 {
@@ -54,7 +54,10 @@ builder.Services.AddSingleton(sp =>
 
 
 
-builder.Services.AddHostedService<GameService>();
+
+
+
+
 
 
 builder.Services.AddCors(options =>

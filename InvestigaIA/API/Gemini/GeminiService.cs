@@ -1,18 +1,9 @@
 using GenerativeAI;
 using GenerativeAI.Types;
-using InvestigaIA.Classes;
-using InvestigaIA.Model.Case;
-using InvestigaIA.Model.Characters;
 using InvestigaIA.Model.Game;
 using InvestigaIA.Model.Utilities;
+using Newtonsoft.Json;
 using Sprache;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Runtime.Intrinsics.X86;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Content = GenerativeAI.Types.Content;
 
 namespace InvestigaIA.API.Gemini
@@ -43,46 +34,55 @@ namespace InvestigaIA.API.Gemini
             try
             {
 
-  
-
-               
 
 
 
-                    GenerationConfig genConfig = new GenerationConfig()
-                    {
-                        ResponseMimeType = "application/json",
-                        ResponseSchema = GoogleSchemaHelper.ConvertToSchema<T>(),
-                    };
+
+
+
+                GenerationConfig genConfig = new GenerationConfig()
+                {
+                    ResponseMimeType = "application/json",
+                    ResponseSchema = GoogleSchemaHelper.ConvertToSchema<T>(),
+                };
 
                 var content = new Content(prompt, "user");
 
 
 
-                var chat =  _model.StartChat(contents);
+                var chat = _model.StartChat(contents);
 
-                  
+
 
                 var genContentRequest = new GenerateContentRequest([content], generationConfig: genConfig);
-              
+
                 var response = await chat.GenerateContentAsync(genContentRequest); ;
 
 
+                var result = response.ToObject<T>();
 
-                    return response.ToObject<T>();
+                if (result == null)
+                {
+
+                    result = JsonConvert.DeserializeObject<T>(response.Text);
+
+                }
+
+
+                return result;
 
 
             }
             catch (HttpRequestException httpEx) when (httpEx.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)
             {
-                
-               
+
+
                 throw;
             }
             catch (Exception ex)
             {
                 throw;
-                     
+
             }
 
         }
@@ -113,12 +113,21 @@ namespace InvestigaIA.API.Gemini
 
 
 
-        public async Task<MessageAnswer> SendRequestAsync(string prompt, Suspect suspect) 
+        public async Task<MessageAnswer> SendRequestAsync(string prompt, string suspectId, GameInstance gameInstance)
         {
             try
             {
 
+                var Suspects = gameInstance.Suspects;
+                var caseFile = gameInstance.CaseFile;
+                var objectives = gameInstance.Objectives;
 
+                var suspect = Suspects.Find(s => s.Id.ToString() == suspectId);
+
+                if (suspect == null)
+                {
+                    throw new Exception("Suspect not found");
+                }
                 GenerationConfig genConfig = new GenerationConfig()
                 {
                     ResponseMimeType = "application/json",
@@ -127,19 +136,44 @@ namespace InvestigaIA.API.Gemini
 
 
 
-                string promptWithContext = @$"Você é um personagem chamado {suspect.Name}. Você é {suspect.Description} e suas descrição é: {suspect.SystemPrompt}.
-                Você deve responder como se fosse esse personagem, não exagere no texto, responda de tamanho adequado para a pergunta.
-                Você não pode quebrar a quarta parede e não pode dizer que é um personagem de um jogo. 
-                Se você não souber a resposta, você deve dizer que não sabe.Você pode escolher o silêncio.Você NÃO É O ASSASSINO, 
-                não admita independente do que o jogador perguntar. Lembre - se que um assassinato acabou de acontecer e você não deve ignorar isso. 
-                O jogador é um investigador e sua autoridade deve ser respeitada. Essa é a mensagem do jogador: {prompt} ";
-                
-                
+                        string promptWithContext = $@"
+                Você é {suspect.Name}, um personagem em um jogo de mistério. Você é {suspect.Description}.
+                {suspect.SystemPrompt}
+
+                **Regras Essenciais do Jogo:**
+                - Responda estritamente como o personagem {suspect.Name}. Mantenha a consistência da sua personalidade, emoções e motivações.
+                - Você não pode quebrar a quarta parede. Nunca diga que você é um personagem de um jogo ou que está em um enredo.
+                - O jogador é um detetive investigando o crime. Respeite a autoridade dele, mas sem ser submisso. Seu tom deve ser consistente com sua descrição (ex: defensivo, arrogante, assustado, etc.).
+                - Se você é o assassino, **não admita o crime** em hipótese alguma. Mantenha-se evasivo e negue qualquer envolvimento, não importa a pergunta.
+                - Se você não souber a resposta para a pergunta do jogador, responda que não sabe ou se recuse a responder. Não retorne um texto vazio.
+                - Mantenha as respostas concisas, mas detalhadas o suficiente para parecerem naturais. Evite respostas excessivamente longas ou genéricas.
+
+                **Contexto do Caso:**
+                - Um assassinato acabou de acontecer. Leve isso em consideração em suas respostas.
+                - O enredo do jogo é: {caseFile.CrimeDetails}. Não revele detalhes do enredo que você não deveria saber.
+
+                **Instruções de Saída (Formato):**
+                - Inclui um campo 'Completed' para sua resposta. Se um objetivo for completo, adicionei seu Id no campo 'Completed'. Caso contrário, deixe-o vazio ou nulo.
+                - Inclui uma List<Objective> 'NewObjectives' para quaisquer novos objetivos que o jogador desbloqueou com esta interação. Se nenhum, deixe a lista vazia.
+                - Não inclua nada além da resposta do personagem no campo Text.
+                - Use os IDs desta lista: {string.Join(",", objectives)}.
+
+                **Pergunta do Detetive:**
+                {prompt}
+
+               
+            ";
+
+
+
+
+
+
                 var content = new Content(promptWithContext, "user");
 
 
 
-                var chat = _model.StartChat(contents);
+                var chat = _model.StartChat(suspect.ConversationHistory);
 
 
 
