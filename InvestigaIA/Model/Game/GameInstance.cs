@@ -2,12 +2,12 @@ using InvestigaIA.API;
 using InvestigaIA.API.Gemini;
 using InvestigaIA.Model.Case;
 using InvestigaIA.Model.Characters;
+using InvestigaIA.Model.Utilities;
 // Removed Spectre.Console
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
-using System.Linq;
 using Newtonsoft.Json;
-using InvestigaIA.Model.Utilities;
+using System.Linq;
 
 
 
@@ -20,23 +20,24 @@ namespace InvestigaIA.Model.Game
 
         private readonly GameService _gameService;
 
-        private readonly OpenAiService openAiService;
+        private readonly IHubContext<GameHub> _hubContext;
 
-       
-        public EndGameStats EndGameStats { get; set; }
+        private bool disposedValue;
 
-        public Dictionary<string, List<string>> Evidences { get; set; } = new();
+
         public List<Suspect> Suspects { get; set; }
 
         public CaseFile CaseFile { get; set; }
 
 
-        public List<Objective> Objectives { get; set; }
+        public Dictionary<int, List<ChatMessage>> Chats { get; set; } = new();
+
+
+        public List<Objective> Objectives { get; set; } = [new Objective { MainObjective = "Encontrar o assassino", Completed = false, Id = Guid.NewGuid() }];
 
         public DateTime CreatedAt { get; } = DateTime.Now;
 
-        private readonly IHubContext<GameHub> _hubContext;
-        private bool disposedValue;
+        public bool Public = true;
 
         private string GameId { get; set; }
 
@@ -56,6 +57,8 @@ namespace InvestigaIA.Model.Game
             Suspects = CharacterSet.suspects;
 
 
+
+
             CaseFile = new CaseFile(Suspects);
 
             CaseFile.CrimeDetails = _gameService.CreateCaseStory(CaseFile, Suspects).Result;
@@ -70,14 +73,44 @@ namespace InvestigaIA.Model.Game
 
 
 
-        public async Task<MessageAnswer> Ask(string prompt, string suspectId)
+        public async Task<MessageAnswer> Ask(AskRequest request)
         {
             try
             {
+                var suspect = Suspects.Find(s => s.Id.ToString() == request.SuspectID) ?? throw new Exception("Suspect not found");
+
+
+                var chat = Chats[suspect.Id];
+
+                chat.Add(new ChatMessage(request.Sender, request.SenderID, request.Message));
+
+
+                await _hubContext.Clients.Group(GameId + suspect.Id.ToString()).SendAsync("ChatUpdate", chat);
+
+                string systemPrompt = GenerateCharacterPrompt(suspect);
+
+                var response = await _geminiService.SendPromptAsync<MessageAnswer>(request.Message, systemPrompt, suspect, Objectives);
+
+
+                if (!Chats.ContainsKey(suspect.Id))
+                {
+                    Chats.Add(suspect.Id, new List<ChatMessage>());
+
+                }
+
+                await _hubContext.Clients.Group(GameId + suspect.Id.ToString()).SendAsync("ChatUpdate", chat);
+
+
+                chat.Add(new ChatMessage(suspect.Name, suspect.Id.ToString(), response.Text ?? ""));
 
 
 
-                var response = await _geminiService.SendRequestAsync(prompt, suspectId, this);
+
+
+
+
+
+
 
 
                 return response;
@@ -90,6 +123,50 @@ namespace InvestigaIA.Model.Game
 
 
         }
+
+
+
+
+        private string GenerateCharacterPrompt(Suspect suspect) =>
+
+            $@"
+                Você é {suspect.Name}, um personagem em um jogo de mistério. Você é {suspect.Description}.
+                {suspect.Personality}
+
+                **Regras Essenciais do Jogo:**
+                - Responda estritamente como o personagem {suspect.Name}. Mantenha a consistência da sua personalidade, emoções e motivações.
+                - Você não pode quebrar a quarta parede. Nunca diga que você é um personagem de um jogo ou que está em um enredo.
+                - O jogador é um detetive investigando o crime. Respeite a autoridade dele, mas sem ser submisso. Seu tom deve ser consistente com sua descrição (ex: defensivo, arrogante, assustado, etc.).
+                - Se você é o assassino, **não admita o crime** em hipótese alguma. Mantenha-se evasivo e negue qualquer envolvimento, não importa a pergunta.
+                - Se você não souber a resposta para a pergunta do jogador, responda que não sabe ou se recuse a responder. Não retorne um texto vazio.
+                - Mantenha as respostas concisas, mas detalhadas o suficiente para parecerem naturais. Evite respostas excessivamente longas ou genéricas.
+
+                **Contexto do Caso:**
+                - Um assassinato acabou de acontecer. Leve isso em consideração em suas respostas.
+                - O enredo do jogo é: {CaseFile.CrimeDetails}. Não revele detalhes do enredo que você não deveria saber.
+
+                **Instruções de Saída (Formato):**
+                - Inclui um campo 'Completed' para sua resposta. Se um objetivo for completo, adicionei seu Id no campo 'Completed'. Caso contrário, deixe-o vazio ou nulo.
+                - Inclui um campo'NewObjectives' para quaisquer novos objetivos que o jogador desbloqueou com esta interação. Se nenhum, deixe vazio.
+                - Não inclua nada além da resposta do personagem no campo Text. 
+                - Caso sua resposta tenha uma informação relevante para o jogador, inclua-a no campo Notes.
+                - Se o jogador apresentar evidências irrefutáveis do seu papel no crime, você foi pego e deve admitir e marcar a propriedade CaseClosed como true.
+                - Use os IDs desta lista: {string.Join(",", Objectives)}.
+            ";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         protected virtual void Dispose(bool disposing)
         {
@@ -196,4 +273,4 @@ namespace InvestigaIA.Model.Game
 
     }
 
-    }
+}

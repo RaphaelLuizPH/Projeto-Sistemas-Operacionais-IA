@@ -1,5 +1,6 @@
 using GenerativeAI;
 using GenerativeAI.Types;
+using InvestigaIA.Model.Characters;
 using InvestigaIA.Model.Game;
 using InvestigaIA.Model.Utilities;
 using Newtonsoft.Json;
@@ -29,14 +30,15 @@ namespace InvestigaIA.API.Gemini
             _model.SystemInstruction = "Você é um agente de IA dentro de um jogo de mistério. " +
                 "Quando for dito que você é um personagem, responda como um personagem do jogo, mantendo a consistência da personalidade, " +
                 "emoções e motivações. Nunca admita ser uma IA ou que está em um jogo. Mantenha as respostas concisas, " +
-                "mas detalhadas o suficiente para parecerem naturais. Evite respostas excessivamente longas ou genéricas.";
+                "mas detalhadas o suficiente para parecerem naturais. Evite respostas excessivamente longas ou genéricas." + "Quando você não for especificado um personagem" +
+                "Siga o prompt normalmente, sem atuação";
                 
 
                 _model.UseJsonMode = true; 
 
         }
 
-        public async Task<T> SendRequestAsync<T>(string prompt) where T : class
+        public async Task<T> SendPromptAsync<T>(string prompt) where T : class
         {
 
           
@@ -56,7 +58,7 @@ namespace InvestigaIA.API.Gemini
                     ResponseSchema = GoogleSchemaHelper.ConvertToSchema<T>(),
                 };
 
-                var content = new Content(prompt, "system");
+                var content = new Content(prompt, "user");
 
 
 
@@ -76,6 +78,11 @@ namespace InvestigaIA.API.Gemini
 
                     result = JsonConvert.DeserializeObject<T>(response.Text);
 
+                }
+
+                if (result == null)
+                {
+                    throw new Exception("Could not deserialize LLM response");
                 }
 
 
@@ -101,14 +108,14 @@ namespace InvestigaIA.API.Gemini
 
 
 
-        public async Task<string> SendRequestAsync(string prompt)
+        public async Task<string> SendPromptAsync(string prompt)
         {
 
            
 
             try
             {
-                var content = new Content(prompt, "system");
+                var content = new Content(prompt, "user");
                 var chat = _model.StartChat(contents);
                 var response = await chat.GenerateContentAsync(new GenerateContentRequest([content]));
                 return response.Text;
@@ -126,21 +133,15 @@ namespace InvestigaIA.API.Gemini
 
 
 
-        public async Task<MessageAnswer> SendRequestAsync(string prompt, string suspectId, GameInstance gameInstance)
+        public async Task<MessageAnswer> SendPromptAsync<T>(string prompt, string promptWithContext, Suspect suspect, List<Objective> objectives) where T : MessageAnswer
         {
             try
             {
 
-                var Suspects = gameInstance.Suspects;
-                var caseFile = gameInstance.CaseFile;
-                var objectives = gameInstance.Objectives;
+             
+        
 
-                var suspect = Suspects.Find(s => s.Id.ToString() == suspectId);
-
-                if (suspect == null)
-                {
-                    throw new Exception("Suspect not found");
-                }
+           
                 GenerationConfig genConfig = new GenerationConfig()
                 {
                     ResponseMimeType = "application/json",
@@ -149,35 +150,8 @@ namespace InvestigaIA.API.Gemini
 
 
 
-                        string promptWithContext = $@"
-                Você é {suspect.Name}, um personagem em um jogo de mistério. Você é {suspect.Description}.
-                {suspect.SystemPrompt}
 
-                **Regras Essenciais do Jogo:**
-                - Responda estritamente como o personagem {suspect.Name}. Mantenha a consistência da sua personalidade, emoções e motivações.
-                - Você não pode quebrar a quarta parede. Nunca diga que você é um personagem de um jogo ou que está em um enredo.
-                - O jogador é um detetive investigando o crime. Respeite a autoridade dele, mas sem ser submisso. Seu tom deve ser consistente com sua descrição (ex: defensivo, arrogante, assustado, etc.).
-                - Se você é o assassino, **não admita o crime** em hipótese alguma. Mantenha-se evasivo e negue qualquer envolvimento, não importa a pergunta.
-                - Se você não souber a resposta para a pergunta do jogador, responda que não sabe ou se recuse a responder. Não retorne um texto vazio.
-                - Mantenha as respostas concisas, mas detalhadas o suficiente para parecerem naturais. Evite respostas excessivamente longas ou genéricas.
-
-                **Contexto do Caso:**
-                - Um assassinato acabou de acontecer. Leve isso em consideração em suas respostas.
-                - O enredo do jogo é: {caseFile.CrimeDetails}. Não revele detalhes do enredo que você não deveria saber.
-
-                **Instruções de Saída (Formato):**
-                - Inclui um campo 'Completed' para sua resposta. Se um objetivo for completo, adicionei seu Id no campo 'Completed'. Caso contrário, deixe-o vazio ou nulo.
-                - Inclui um campo'NewObjectives' para quaisquer novos objetivos que o jogador desbloqueou com esta interação. Se nenhum, deixe vazio.
-                - Não inclua nada além da resposta do personagem no campo Text.
-                - Use os IDs desta lista: {string.Join(",", objectives)}.
-            ";
-
-
-
-
-
-
-                var sysContent = new Content(promptWithContext, "system");
+                var sysContent = new Content(promptWithContext, "user");
                 var content = new Content(prompt, "user");
 
 
@@ -192,8 +166,50 @@ namespace InvestigaIA.API.Gemini
                 var response = await chat.GenerateContentAsync(genContentRequest); ;
 
 
+                var messageAnswer = response.ToObject<MessageAnswer>();
 
-                return response.ToObject<MessageAnswer>();
+                if(messageAnswer is null)
+                {
+                    messageAnswer = JsonConvert.DeserializeObject<MessageAnswer>(response.Text);
+                } 
+
+                if(messageAnswer is null)
+                {
+                    throw new Exception("Could not deserialize LLM response");
+                }
+
+
+                if (messageAnswer.NewObjectives.Length > 0)
+                {
+                    foreach(var obj in messageAnswer.NewObjectives)
+                    {
+                      
+
+
+                        if (!objectives.Select(o => o.MainObjective).Contains(obj.MainObjective))
+                        {
+                           
+                            
+                            objectives.Add(new Objective() { MainObjective = obj.MainObjective});
+                        }
+                    }
+                }
+
+
+                if(messageAnswer.Completed.Length > 0)
+                {
+                    foreach(var id in messageAnswer.Completed)
+                    {
+                        var objective = objectives.FirstOrDefault(o => o.Id.ToString() == id);
+                        if(objective != null)
+                        {
+                            objective.Completed = true;
+                        }
+                    }
+                }
+
+
+                return messageAnswer;
 
 
             }

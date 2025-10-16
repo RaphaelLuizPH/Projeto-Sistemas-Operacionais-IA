@@ -25,7 +25,7 @@ namespace InvestigaIA.Model.Game
         {
             try
             {
-                var objectives = await geminiService.SendRequestAsync<List<ObjectiveDTO>>($@"Com base no seguinte enredo de assassinato, crie uma lista de objetivos de jogo que guiem o jogador a resolver o mistério.
+                var objectives = await geminiService.SendPromptAsync<List<ObjectiveDTO>>($@"Com base no seguinte enredo de assassinato, crie uma lista de objetivos de jogo que guiem o jogador a resolver o mistério.
 
     **Enredo do Jogo:**
     {caseFile.CrimeDetails}
@@ -68,7 +68,7 @@ namespace InvestigaIA.Model.Game
 
             try
             {
-                var story = await geminiService.SendRequestAsync($@"
+                var story = await geminiService.SendPromptAsync($@"
     Você é um roteirista de jogos de mistério. Seu objetivo é criar um enredo para um jogo de assassinato.
     O cenário é a Mansão Blackwood, e o patriarca da família foi assassinado.
 

@@ -28,9 +28,11 @@ namespace InvestigaIA.Model.Game
         }
 
 
-        public async Task JoinGame(string gameId)
+        public async Task JoinGame(string gameId, string suspectId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, gameId + suspectId);
+
+       
             await Clients.Caller.SendAsync("ReceiveMessage", $"Joined game {gameId}");
         }
 
@@ -39,6 +41,9 @@ namespace InvestigaIA.Model.Game
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId);
             await Clients.Caller.SendAsync("ReceiveMessage", $"Left game {gameId}");
         }
+
+
+       
     }
 
 }

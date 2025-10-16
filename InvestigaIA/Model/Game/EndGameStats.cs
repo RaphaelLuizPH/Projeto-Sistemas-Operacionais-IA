@@ -12,8 +12,8 @@ namespace InvestigaIA.Model.Game
 
 
         public CaseFile CaseFile { get; set; }
-        public Dictionary<string, bool> Objetivos { get; set; }
-        public Suspect Acusado { get; set; }
+        public Dictionary<string, bool> Objectives { get; set; }
+        public Suspect AccusedSuspect { get; set; }
 
         public TimeSpan Time { get; set; }
         public string Message { get; set; }
@@ -24,7 +24,7 @@ namespace InvestigaIA.Model.Game
         {
             get
             {
-                return Acusado != null && Acusado.Name == CaseFile.Culprit.Name;
+                return AccusedSuspect != null && AccusedSuspect.Name == CaseFile.Culprit.Name;
             }
         }
     }

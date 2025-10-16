@@ -18,7 +18,7 @@ namespace InvestigaIA.Model.Game
  
         public override string ToString()
         {
-            return MainObjective + "\t" + Id;
+            return MainObjective + $"\t({Id})";
         }
 
     }

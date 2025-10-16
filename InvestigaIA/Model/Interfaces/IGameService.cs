@@ -2,7 +2,7 @@
 using InvestigaIA.Model.Characters;
 using InvestigaIA.Model.Game;
 
-namespace InvestigaIA
+namespace InvestigaIA.Model.Interfaces
 {
     public interface IGameService
     {

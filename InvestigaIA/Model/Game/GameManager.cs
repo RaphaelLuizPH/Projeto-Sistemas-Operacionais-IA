@@ -22,6 +22,8 @@ namespace InvestigaIA.Model.Game
 
         public Dictionary<string, GameInstance> Games = new();
 
+        public long Count => Games.Count;
+
 
         public GameManager(IServiceProvider provider, IHubContext<GameHub> hubContext, GeminiService geminiService, GameService gameService)
         {

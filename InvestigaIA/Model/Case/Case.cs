@@ -63,7 +63,7 @@ namespace InvestigaIA.Model.Case
 
          
             Title = $"O caso de Thomas Blackwood";
-            Culprit = new Culprit(correctCulprit.Name, correctCulprit.Description, correctCulprit.SystemPrompt, correctCulprit.ImageCode) { Id = correctCulprit.Id };
+            Culprit = new Culprit(correctCulprit.Name, correctCulprit.Description, correctCulprit.Personality, correctCulprit.ImageCode) { Id = correctCulprit.Id };
             Motive = crimeMotives[new Random().Next(crimeMotives.Count)];
             Weapon = CrimeWeapons[new Random().Next(CrimeWeapons.Count)];
             Location = Locations[new Random().Next(Locations.Count)];

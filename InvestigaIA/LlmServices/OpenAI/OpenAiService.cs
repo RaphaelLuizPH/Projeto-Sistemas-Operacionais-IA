@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using InvestigaIA.API.OpenAI;
-using InvestigaIA.Classes;
+
 using InvestigaIA.Model.Characters;
 using InvestigaIA.Model.Utilities;
 using TheInterrogatorAIDetective.Models.Utilities;

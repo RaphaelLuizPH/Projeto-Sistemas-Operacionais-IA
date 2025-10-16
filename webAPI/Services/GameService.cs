@@ -24,17 +24,25 @@ namespace webAPI.Services
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
 
-
-           var runningsGames = _gameManager.Games.Where(g => (g.Value.CreatedAt - DateTime.Now) > TimeSpan.FromHours(4));
-
-
-            foreach (var game in runningsGames)
+            while(!stoppingToken.IsCancellationRequested)
             {
-               
-                 game.Value.Dispose();
-                _gameManager.Games.Remove(game.Key);
-                
+                var runningsGames = _gameManager.Games.Where(g => (g.Value.CreatedAt - DateTime.Now) > TimeSpan.FromHours(4));
+
+
+
+                foreach (var game in runningsGames)
+                {
+
+                    game.Value.Dispose();
+                    _gameManager.Games.Remove(game.Key);
+
+                }
+
+                await Task.Delay(TimeSpan.FromHours(1), stoppingToken); 
             }
+
+
+           
 
         }
 

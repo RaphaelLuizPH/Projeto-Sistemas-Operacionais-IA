@@ -1,4 +1,5 @@
 using GenerativeAI.Types;
+using InvestigaIA.Model.Game;
 using System.Text.Json.Serialization;
 
 
@@ -13,7 +14,7 @@ namespace InvestigaIA.Model.Characters
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Description = description ?? throw new ArgumentNullException(nameof(description));
-            SystemPrompt = systemPrompt ?? throw new ArgumentNullException(nameof(systemPrompt));
+            Personality = systemPrompt ?? throw new ArgumentNullException(nameof(systemPrompt));
             ImageCode = imageCode ?? throw new ArgumentNullException(nameof(imageCode));
         }
 
@@ -24,7 +25,7 @@ namespace InvestigaIA.Model.Characters
 
         public string Name { get; set; }
         public string Description { get; set; }
-        public string SystemPrompt { get; set; }
+        public string Personality { get; set; }
 
         public int Id { get; set; }
         public string ImageCode { get; set; }
@@ -32,6 +33,10 @@ namespace InvestigaIA.Model.Characters
         [JsonIgnore]
         [JsonPropertyName("conversationHistory")]
         public List<Content> ConversationHistory { get; set; } = [];
+
+       public List<ChatMessage> ChatMessages { get; set; }
+
+
         public double StressLevel { get; set; } = 0.0d;
 
 
