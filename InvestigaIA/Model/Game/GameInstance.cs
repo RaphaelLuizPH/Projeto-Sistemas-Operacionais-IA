@@ -79,39 +79,33 @@ namespace InvestigaIA.Model.Game
             {
                 var suspect = Suspects.Find(s => s.Id.ToString() == request.SuspectID) ?? throw new Exception("Suspect not found");
 
+                if (!Chats.TryGetValue(suspect.Id, out var chat))
+                {
+                    Chats.Add(suspect.Id, new List<ChatMessage>());
 
-                var chat = Chats[suspect.Id];
+                    chat = Chats[suspect.Id];
+                }
 
-                chat.Add(new ChatMessage(request.Sender, request.SenderID, request.Message));
+                chat = Chats[suspect.Id];
 
 
-                await _hubContext.Clients.Group(GameId + suspect.Id.ToString()).SendAsync("ChatUpdate", chat);
+
+                
+                var newChatMessage = new ChatMessage(request.Sender, request.SenderID, request.Message, MessageType.User);
+
+                chat.Add(newChatMessage);
+
+               await _hubContext.Clients.Group(suspect.Id.ToString()).SendAsync("Send", newChatMessage);
 
                 string systemPrompt = GenerateCharacterPrompt(suspect);
 
                 var response = await _geminiService.SendPromptAsync<MessageAnswer>(request.Message, systemPrompt, suspect, Objectives);
 
+                var newChatResponse = new ChatMessage(suspect.Name, suspect.Id.ToString(), response.Text ?? "", MessageType.Model);
 
-                if (!Chats.ContainsKey(suspect.Id))
-                {
-                    Chats.Add(suspect.Id, new List<ChatMessage>());
+                chat.Add(newChatResponse);
 
-                }
-
-                await _hubContext.Clients.Group(GameId + suspect.Id.ToString()).SendAsync("ChatUpdate", chat);
-
-
-                chat.Add(new ChatMessage(suspect.Name, suspect.Id.ToString(), response.Text ?? ""));
-
-
-
-
-
-
-
-
-
-
+                await _hubContext.Clients.Group(suspect.Id.ToString()).SendAsync("Send", newChatResponse);
 
                 return response;
 

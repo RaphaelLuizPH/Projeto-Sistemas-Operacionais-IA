@@ -18,11 +18,11 @@ namespace InvestigaIA.Model.Utilities
 
         public AskRequest() { }
 
-        public AskRequest(string gameId, string suspectName, string question, string senderID, string sender)
+        public AskRequest(string gameId, string suspectId, string message, string senderID, string sender)
         {
             GameId = gameId ?? string.Empty;
-            SuspectID = suspectName ?? string.Empty;
-            Message = question ?? string.Empty;
+            SuspectID = suspectId ?? string.Empty;
+            Message = message ?? string.Empty;
             SenderID = senderID ?? string.Empty;
             Sender = sender ?? string.Empty;
         }

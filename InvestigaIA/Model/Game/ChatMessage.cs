@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace InvestigaIA.Model.Game
 {
-    public class ChatMessage(string sender, string senderId, string message)
+    public class ChatMessage(string sender, string senderId, string message, MessageType type)
     {
 
         public string Message { get; set; } = message;
@@ -18,9 +18,18 @@ namespace InvestigaIA.Model.Game
         public string SenderID { get; set; } = senderId;
 
         public DateTime time { get; set; } = DateTime.Now;
+
+        public MessageType Type { get; set; } = type;
     }
 
 
+
+    public enum MessageType
+    {
+        Model,
+        User,
+
+    }
 
 
 

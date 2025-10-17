@@ -1,30 +1,62 @@
-﻿using System.Net.Http;
-using InvestigaIA.API;
-using InvestigaIA.API.Gemini;
-using InvestigaIA.Model.Characters;
+﻿using InvestigaIA.Model.Utilities;
+using Microsoft.AspNetCore.SignalR.Client;
 
-Console.WriteLine("Starting InvestigaIA...");
+var connection = new HubConnectionBuilder()
+           .WithUrl("ws://localhost:5014/gamehub")
+           .Build();
 
-
-var gemini = new GeminiService("AIzaSyApFBCT0lICs3nk5UC6IAZj5k_KASpjrRc");
-
-
-
-var res = await gemini.SendPromptAsync <List<SuspectDTO>>(@"Crie 10 personagens para um jogo de detetive que passa numa mansão (a mansão Blackwood). Cada personagem deve ter um nome, descrição e prompt de sistema.
-           O prompt de sistema deve ser uma frase curta que descreve o papel do personagem no jogo. VocÊ não deve colocar o apelido de personagens entre aspas e nem utilizar aspas de modo que quebre o JSON.
-           Os personagens devem ser únicos e interessantes, com diferentes origens e personalidades. Não defina o papel do personagem (como vítima, jogador, assassino). Você deve fornecer
-           um valor para ImageCode, que deve ser o sexo do personagem + um numero de 1 a 10. (por exemplo: male1, female2, etc. em ordem aleatória, não linear).");
-
-
-var Suspects = res.Select(s => new Suspect()
+connection.On<string>("ChatUpdate", message =>
 {
-    Name = s.Name,
-    Description = s.Description,
-    Personality = s.SystemPrompt,
-    ImageCode = s.ImageCode,
-}).ToList();
+    Console.WriteLine($"ChatUpdate: {message}");
+});
+
+connection.On<string>("ReceiveMessage", message =>
+{
+    Console.WriteLine($"ReceiveMessage: {message}");
+});
+
+connection.On<string>("Send", message =>
+{
+    Console.WriteLine($"Send: {message}");
+});
 
 
-//var message = await gemini.SendRequestAsync("Olá, como se chama?", Suspects.First());
+
+connection.On<MessageAnswer>("MessageAnswer", message =>
+{
+    Console.WriteLine(message.Text);
+});
 
 
+
+await connection.StartAsync();
+
+
+
+Console.WriteLine("Connected!");
+
+var Gameid = Console.ReadLine();
+
+
+await connection.InvokeAsync("JoinGame", Gameid);
+
+var chatId = Console.ReadLine();    
+
+
+await connection.InvokeAsync("OpenChat", chatId);
+
+
+
+while (true) { 
+
+    var message = Console.ReadLine();
+    if (message == "exit") break;
+    await connection.InvokeAsync("SendMessage", Gameid, chatId, message);
+}
+
+
+
+
+
+
+await connection.StopAsync();

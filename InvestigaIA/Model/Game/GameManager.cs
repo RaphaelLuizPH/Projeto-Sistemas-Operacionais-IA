@@ -44,14 +44,7 @@ namespace InvestigaIA.Model.Game
             return null;
         }
 
-        public void Init()
-        {
-            while (Games.Count > 0)
-            {
-                Console.Write("Game tick at " + DateTime.Now.ToString("HH:mm:ss"));
-            }
-
-        }
+   
         public async Task CreateGame()
         {
             var id = Ulid.NewUlid().ToString();
@@ -59,8 +52,17 @@ namespace InvestigaIA.Model.Game
            Games.Add(id, new GameInstance(_geminiService, id, _hubContext, _gameService));
         }
 
+        internal List<ChatMessage> GetChat(string gameId, int chatId)
+        {
+            if (Games.TryGetValue(gameId, out GameInstance? value))
+            {
+              
+                return value.Chats.TryGetValue(chatId, out var chat) ? chat : null;
 
+            }
 
+            return null;
+        }
     }
 }
 

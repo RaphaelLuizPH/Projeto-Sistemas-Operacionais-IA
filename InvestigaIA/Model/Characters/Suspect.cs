@@ -34,7 +34,7 @@ namespace InvestigaIA.Model.Characters
         [JsonPropertyName("conversationHistory")]
         public List<Content> ConversationHistory { get; set; } = [];
 
-       public List<ChatMessage> ChatMessages { get; set; }
+
 
 
         public double StressLevel { get; set; } = 0.0d;

@@ -179,7 +179,7 @@ namespace InvestigaIA.API.Gemini
                 }
 
 
-                if (messageAnswer.NewObjectives.Length > 0)
+                if (messageAnswer?.NewObjectives?.Length > 0)
                 {
                     foreach(var obj in messageAnswer.NewObjectives)
                     {
@@ -196,7 +196,7 @@ namespace InvestigaIA.API.Gemini
                 }
 
 
-                if(messageAnswer.Completed.Length > 0)
+                if(messageAnswer?.Completed?.Length > 0)
                 {
                     foreach(var id in messageAnswer.Completed)
                     {

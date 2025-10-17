@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using InvestigaIA.Model.Utilities;
 using Microsoft.AspNetCore.SignalR;
 
 namespace InvestigaIA.Model.Game
@@ -28,22 +25,63 @@ namespace InvestigaIA.Model.Game
         }
 
 
-        public async Task JoinGame(string gameId, string suspectId)
+        public async Task JoinGame(string gameId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, gameId + suspectId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
 
-       
+
             await Clients.Caller.SendAsync("ReceiveMessage", $"Joined game {gameId}");
         }
+
+
+        public async Task OpenChat(string gameId, int chatID)
+        {
+            
+        
+            
+            
+            await Groups.AddToGroupAsync(Context.ConnectionId, chatID.ToString());
+
+            var chat = _gameManager.GetChat(gameId, chatID);
+
+            await Clients.Caller.SendAsync("ReceiveChatHistory", chat);
+
+            await Clients.Caller.SendAsync("ReceiveMessage", "Chat opened.");
+
+
+        }
+
+
+        public async Task SendMessage(string gameId, string chatId, string message)
+        {
+
+            var game = _gameManager.GetGame(gameId);
+
+            var request = new AskRequest()
+            {
+                GameId = gameId,
+                SuspectID = chatId,
+                Message = message,
+                SenderID = Context.UserIdentifier,
+                Sender = Context.User.Identity.Name ?? "User"
+            };
+
+    
+
+            var messageAnswer = await game.Ask(request);
+
+           
+        }
+
 
         public async Task LeaveGame(string gameId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId);
-            await Clients.Caller.SendAsync("ReceiveMessage", $"Left game {gameId}");
+            await Clients.Group(gameId).SendAsync("ReceiveMessage", $"Left game {gameId}");
         }
 
 
-       
+
     }
 
 }
