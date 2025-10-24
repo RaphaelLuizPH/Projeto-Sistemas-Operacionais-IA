@@ -95,7 +95,7 @@ namespace InvestigaIA.Model.Game
 
                 chat.Add(newChatMessage);
 
-               await _hubContext.Clients.Group(suspect.Id.ToString()).SendAsync("Send", newChatMessage);
+               await _hubContext.Clients.Group(request.ChatId).SendAsync("Send", newChatMessage);
 
                 string systemPrompt = GenerateCharacterPrompt(suspect);
 
@@ -105,7 +105,7 @@ namespace InvestigaIA.Model.Game
 
                 chat.Add(newChatResponse);
 
-                await _hubContext.Clients.Group(suspect.Id.ToString()).SendAsync("Send", newChatResponse);
+                await _hubContext.Clients.Group(request.ChatId).SendAsync("Send", newChatResponse);
 
                 return response;
 

@@ -34,15 +34,15 @@ namespace InvestigaIA.Model.Game
         }
 
 
-        public async Task OpenChat(string gameId, int chatID)
+        public async Task OpenChat(string gameId, int suspectId)
         {
             
-        
-            
-            
-            await Groups.AddToGroupAsync(Context.ConnectionId, chatID.ToString());
+            string chatGroupName = $"{gameId}_chat_{suspectId}";
 
-            var chat = _gameManager.GetChat(gameId, chatID);
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, chatGroupName);
+
+            var chat = _gameManager.GetChat(gameId, suspectId);
 
             await Clients.Caller.SendAsync("ReceiveChatHistory", chat);
 
@@ -52,23 +52,34 @@ namespace InvestigaIA.Model.Game
         }
 
 
-        public async Task SendMessage(string gameId, string chatId, string message)
+        public async Task SendMessage(string gameId, string suspectId, string message)
         {
 
+            string chatGroupName = $"{gameId}_chat_{suspectId}";
+
             var game = _gameManager.GetGame(gameId);
+
+            if(game == null)
+            {
+                await Clients.Caller.SendAsync("ReceiveMessage", $"Game with ID {gameId} not found.");
+                return;
+            }
+
 
             var request = new AskRequest()
             {
                 GameId = gameId,
-                SuspectID = chatId,
+                SuspectID = suspectId,
                 Message = message,
                 SenderID = Context.UserIdentifier,
-                Sender = Context.User.Identity.Name ?? "User"
+                Sender = Context.User.Identity.Name ?? "User",
+                ChatId = chatGroupName
+
             };
 
     
 
-            var messageAnswer = await game.Ask(request);
+            await game.Ask(request);
 
            
         }

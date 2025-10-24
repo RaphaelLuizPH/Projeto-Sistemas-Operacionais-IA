@@ -14,6 +14,7 @@ namespace InvestigaIA.Model.Utilities
         public string Message { get; set; } = string.Empty;
         public required string SenderID { get; set; } = string.Empty;
 
+        public required string ChatId { get; set; }
         public required string Sender { get; set; }
 
         public AskRequest() { }
