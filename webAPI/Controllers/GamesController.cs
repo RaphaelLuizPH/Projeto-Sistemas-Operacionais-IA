@@ -1,6 +1,7 @@
 
 using InvestigaIA.Model.Game;
 using InvestigaIA.Model.Infrastructure;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Sprache;
@@ -21,35 +22,40 @@ namespace webAPI.Controllers
 
 
         [HttpPost("Create", Name = "CreateGame")]
-        public async Task<GenericResult<IActionResult>> CreateGame()
+        public async Task<IActionResult> CreateGame()
         {
             try
             {
                 await _gameManager.CreateGame();
-                var gameId = _gameManager.Games.Keys.LastOrDefault();
-                return ResultFactory<IActionResult>.Success(Ok(gameId), "Game created successfully");
+                var gameId = _gameManager.Games.Keys.LastOrDefault() ?? throw new Exception("Game not created");
+
+                return Ok(ResultFactory<string>.Success(gameId, "Game created successfully"));
+            } catch(HttpRequestException ex)
+            {
+                return StatusCode(500, ResultFactory<string>.Failure(ex.Message, "Failed to create game"));
             }
+
+            
             catch (Exception ex)
             {
-
-                return ResultFactory<IActionResult>.Failure(BadRequest(ex.Message), "Failed to create game");
+                return  BadRequest( ResultFactory<string>.Failure(ex.Message, "Failed to create game"));
             }
         }
 
 
         [HttpGet("/{id}")]
 
-        public async Task<GenericResult<IActionResult>> GetGame(string id)
+        public async Task<IActionResult> GetGame(string id)
         {
             try
             {
               var game = _gameManager.GetGame(id);
 
-                return  ResultFactory<IActionResult>.Success(Ok(game), $"Sucessfully fetch game with id {id}") ;
+                return Ok(ResultFactory<GameInstance>.Success(game, $"Sucessfully fetch game with id {id}"))  ;
 
             } catch(Exception ex)
             {
-                return ResultFactory<IActionResult>.Failure(BadRequest(ex.Message),$"Game with id {id} not found");
+                return BadRequest(ResultFactory<string>.Failure(ex.Message, $"Game with id {id} not found")) ;
 
                  
             }
@@ -58,19 +64,27 @@ namespace webAPI.Controllers
 
         [HttpGet(Name = "GetAll")] 
 
-        public async Task<GenericResult<IActionResult>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
 
             try
             {
-                var gameIds = _gameManager.Games.Where(g => g.Value.Public).Select(g => g.Key);
+               var gameIds = _gameManager.Games.Where(g => g.Value.Public).Select(g => g.Key);
 
+               var result = ResultFactory<IEnumerable<string>>.Success(gameIds, $"Fetch all games: {_gameManager.Count}");
 
-                return ResultFactory<IActionResult>.Success(Ok(gameIds), $"Fetch all games: {_gameManager.Count}");
+               return Ok(result);
+
+               
             } catch(Exception ex)
             {
 
-                return ResultFactory<IActionResult>.Failure(BadRequest(ex.Message), "Failed to fetch games");
+                var result = ResultFactory<string>.Failure(null!, "Failed to fetch games");
+                
+                return StatusCode(500, result);
+
+
+               
             }
 
 

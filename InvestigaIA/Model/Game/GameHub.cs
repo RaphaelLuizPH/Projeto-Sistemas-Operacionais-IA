@@ -1,10 +1,12 @@
 using InvestigaIA.Model.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace InvestigaIA.Model.Game
 {
 
-
+    [Authorize]
     public class GameHub(GameManager gameManager) : Hub
     {
 
@@ -27,52 +29,65 @@ namespace InvestigaIA.Model.Game
 
         public async Task JoinGame(string gameId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+            await Groups.AddToGroupAsync(Context.UserIdentifier, gameId);
 
+            
 
             await Clients.Caller.SendAsync("ReceiveMessage", $"Joined game {gameId}");
         }
 
 
-        public async Task OpenChat(string gameId, int suspectId)
+        public async Task OpenChat(string gameId, string suspectId)
         {
-            
             string chatGroupName = $"{gameId}_chat_{suspectId}";
 
+        
 
-            await Groups.AddToGroupAsync(Context.ConnectionId, chatGroupName);
+            try
+            {
+              
 
-            var chat = _gameManager.GetChat(gameId, suspectId);
 
-            await Clients.Caller.SendAsync("ReceiveChatHistory", chat);
+                await Groups.AddToGroupAsync(Context.UserIdentifier, chatGroupName);
 
-            await Clients.Caller.SendAsync("ReceiveMessage", "Chat opened.");
+                var chat = _gameManager.GetChat(gameId, suspectId);
 
+                await Clients.Caller.SendAsync("ReceiveChatHistory", chat);
+
+                await Clients.Caller.SendAsync("ReceiveMessage", "Chat opened.");
+            } catch(Exception ex)
+            {
+                await Clients.Group(chatGroupName).SendAsync("ReceiveMessage", ex);
+            }
+
+           
 
         }
 
 
-        public async Task SendMessage(string gameId, string suspectId, string message)
+        public async Task SendMessage(SendMessageRequest messageRequest)
         {
 
-            string chatGroupName = $"{gameId}_chat_{suspectId}";
+            string chatGroupName = $"{messageRequest.gameId}_chat_{messageRequest.chatId}";
 
-            var game = _gameManager.GetGame(gameId);
+            var game = _gameManager.GetGame(messageRequest.gameId);
 
             if(game == null)
             {
-                await Clients.Caller.SendAsync("ReceiveMessage", $"Game with ID {gameId} not found.");
+                await Clients.Caller.SendAsync("ReceiveMessage", $"Game with ID {messageRequest.gameId} not found.");
                 return;
             }
+
+       
 
 
             var request = new AskRequest()
             {
-                GameId = gameId,
-                SuspectID = suspectId,
-                Message = message,
+                GameId = messageRequest.gameId,
+                SuspectID = messageRequest.chatId,
+                Message = messageRequest.message,
                 SenderID = Context.UserIdentifier,
-                Sender = Context.User.Identity.Name ?? "User",
+                Sender = Context.User.FindFirst(ClaimTypes.Name).Value ?? "User",
                 ChatId = chatGroupName
 
             };
@@ -89,6 +104,7 @@ namespace InvestigaIA.Model.Game
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId);
             await Clients.Group(gameId).SendAsync("ReceiveMessage", $"Left game {gameId}");
+           
         }
 
 

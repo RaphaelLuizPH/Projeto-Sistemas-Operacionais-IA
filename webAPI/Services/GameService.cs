@@ -24,6 +24,9 @@ namespace webAPI.Services
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
 
+           
+            
+            
             while(!stoppingToken.IsCancellationRequested)
             {
                 var runningsGames = _gameManager.Games.Where(g => (g.Value.CreatedAt - DateTime.Now) > TimeSpan.FromHours(4));

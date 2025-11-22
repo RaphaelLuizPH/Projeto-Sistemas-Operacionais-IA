@@ -1,0 +1,107 @@
+{
+  "Suspects": [
+    {
+      "Name": "Viktor Kovalenko",
+      "Description": "Seu pai era operário de fábrica e morreu em uma explosão causada por negligência nas medidas de segurança; sua mãe, uma enfermeira que se afogou no álcool. Viktor se alistou jovem, lutando em conflitos de fronteira que ninguém lembra ou se importa mais. Quando voltou, encontrou sua casa destruída e o povo pelo qual lutou vivendo pior do que antes.",
+      "Personality": "Viktor é um homem moldado pelo silêncio e pelo arrependimento. Não fala muito, mas quando fala, suas palavras têm peso — cada palavra parece conquistada. Apesar do exterior brutal, possui um código moral rígido: não machuca inocentes, não trai a confiança. É assombrado pelo que fez, mas orgulhoso demais para buscar perdão.",
+      "Id": "1",
+      "ImageCode": "male1",
+      "StressLevel": 0.0
+    },
+    {
+      "Name": "Artyom Dragovich",
+      "Description": "Já foi contador de uma grande empresa de transporte marítimo, Artyom viu seus patrões lavarem milhões em paraísos fiscais enquanto seus trabalhadores passavam fome. Quando denunciou, o sistema o enterrou — demitido, colocado na lista negra, deixado para apodrecer. Agora trabalha como mordomo para a família Blackwook",
+      "Personality": "Preciso, meticuloso e amargamente inteligente. Mantém um registro de dívidas — não monetárias, mas morais. Ajuda Viktor com informações, sempre por um preço que não se mede em dinheiro.",
+      "Id": "3",
+      "ImageCode": "male3",
+      "StressLevel": 0.0
+    },
+    {
+      "Name": "Mila Redcat",
+      "Description": "Pilota de rua e mecânica que cresceu idolatrando os trabalhadores que construíram os motores da cidade. Agora vasculha as mesmas fábricas por peças, montando veículos perigosos que rasgam a noite. Sua oficina serve de esconderijo para fugitivos.",
+      "Personality": "Rebelde, sarcástica, vive rápido para não pensar. Suas mãos estão sempre sujas de graxa, seu coração atrás de muros.",
+      "Id": "8",
+      "ImageCode": "female3",
+      "StressLevel": 0.0
+    },
+    {
+      "Name": "Sofia Darkwood",
+      "Description": "Correspondente de guerra que virou poeta alcoólatra. Já viu demais — guerras, corrupção, a cidade apodrecendo por dentro. Escreve sobre tudo em seus cadernos manchados, vendendo fragmentos de verdade para quem quiser ler.",
+      "Personality": "Carismática, quebrada, magnética. Vaga de bar em bar, buscando sentido na fumaça e na bebida barata. Viktor já a salvou de si mesma — ela ainda não decidiu se o perdoa por isso.",
+      "Id": "6",
+      "ImageCode": "female2",
+      "StressLevel": 0.0
+    },
+    {
+      "Name": "Katarina Darkwood",
+      "Description": "Artista de rua cujos murais são proibidos por 'incitar desordem'. Pinta paredes inteiras com rostos dos perdidos — trabalhadores desaparecidos, soldados mortos, mães esquecidas. A cidade apaga constantemente sua arte; ela continua pintando mesmo assim.",
+      "Personality": "Desafiante, idealista, queima com juventude mas fala como alguém duas vezes mais velha.",
+      "Id": "4",
+      "ImageCode": "male4",
+      "StressLevel": 0.0
+    },
+    {
+      "Name": "Michael Bronson",
+      "Description": "Já foi um boxeador peso-pesado celebrado, Boris teve a carreira encerrada após matar um homem no ringue. Os juízes chamaram de acidente. Ele não. Agora trabalha como capanga nos estaleiros, quebrando ossos em vez de recordes.",
+      "Personality": "Brutalmente honesto, mas leal à sua maneira distorcida. Enxerga a luta como confissão — dor como absolvição.",
+      "Id": "9",
+      "ImageCode": "female4",
+      "StressLevel": 0.0
+    },
+    {
+      "Name": "Ludmila Blackwood",
+      "Description": "Aristocrata caída que virou financiadora do crime. Controla metade do mercado negro da cidade por meio de laranjas. Sua mansão está decadente, sua fortuna se esvaindo, mas sua influência continua afiada como vidro.",
+      "Personality": "Elegante, implacável e amargamente charmosa. Manipula pessoas como peças de xadrez.",
+      "Id": "5",
+      "ImageCode": "female1",
+      "StressLevel": 0.0
+    },
+    {
+      "Name": "Anton Petro",
+      "Description": "Cresceu nos túneis subterrâneos mantendo os velhos canos de vapor da cidade. Cresce para ser o tipo de advogado capaz de provar a inocência dos poderosos mais culpados",
+      "Personality": "Nervoso, falante, brilhante em curtos períodos. Paranoico.",
+      "Id": "2",
+      "ImageCode": "male2",
+      "StressLevel": 0.0
+    }
+  ],
+  "CaseFile": {
+    "Title": "O caso de Thomas Blackwood",
+    "CrimeDetails": "1.  **Vítima e Circunstâncias do Crime:**\n\nO patriarca da família Blackwood, Alistair Blackwood, foi encontrado morto em seu escritório, no andar de cima da mansão, por volta das 22h. Alistair era conhecido por ser um homem implacável, um magnata que construiu seu império sobre as costas de outros. Ele era um mestre manipulador, com inúmeros segredos e inimigos. Nos últimos anos, sua saúde estava em declínio, mas ele se recusava a ceder o controle de seus negócios e de sua família. A causa da morte foi envenenamento por uma substância rara e indetectável em uma autópsia superficial, indicando premeditação e conhecimento especializado. A única pista na cena do crime era uma única pena de corvo preta perto do corpo, algo incomum na mansão.\n\n2.  **Assassino e Motivo:**\n\nO assassino é Sofia Darkwood, a correspondente de guerra que virou poeta alcoólatra. O motivo é vingança pelo destino de seu irmão, Thomas. Anos atrás, Thomas era um idealista que trabalhava nas minas de carvão de Blackwood, denunciando as condições de trabalho desumanas. Alistair, temendo escândalo e interrupção em seus lucros, orquestrou um \"acidente\" na mina que matou Thomas e muitos outros trabalhadores. Sofia nunca superou a morte do irmão, afogando suas mágoas em álcool e escrevendo poemas amargos sobre a corrupção da cidade. Ela descobriu evidências irrefutáveis do envolvimento de Alistair na morte de Thomas em documentos antigos, guardados no escritório do patriarca, e decidiu que a justiça só seria feita com a morte de Alistair. A pena de corvo foi deixada como uma assinatura, uma referência a um poema que Sofia escreveu sobre a morte de seu irmão, onde ela o descrevia como um corvo preso em uma gaiola.\n\n3.  **Álibis dos Suspeitos:**\n\n*   **Sofia Darkwood:** Afirma estar bêbada em seu quarto, escrevendo poemas. Vários criados confirmam que a viram subir para o quarto no início da noite e não a viram sair desde então. No entanto, seu quarto fica próximo ao escritório de Alistair, e o álcool em seu hálito poderia mascarar qualquer outro cheiro.\n*   **Viktor Kovalenko:** Diz ter passado a noite bebendo em um bar local, tentando esquecer o passado. Vários frequentadores do bar o reconhecem, mas ninguém pode confirmar que ele ficou lá a noite toda. Ele tem uma ferida recente na mão, que afirma ter sido causada por uma briga de bar, mas a ferida parece ter sido causada por algo afiado.\n*   **Artyom Dragovich:** Alega estar organizando a biblioteca e preparando o chá da noite, rotinas que ele segue meticulosamente. Outros empregados confirmam sua presença na cozinha e na biblioteca, mas não podem atestar cada minuto de sua noite. Ele parece nervoso e esquivo durante o interrogatório.\n*   **Mila Redcat:** Diz ter passado a noite trabalhando em sua oficina, consertando um carro para um cliente. Ela mostra um carro parcialmente desmontado como prova. No entanto, ela não consegue fornecer o nome do cliente e se contradiz ao descrever os detalhes do trabalho.\n*   **Katarina Darkwood:** Afirma estar pintando um novo mural no lado leste da cidade, um ato de desafio que ela faz regularmente. Não há testemunhas para confirmar seu álibi, pois ela trabalha na clandestinidade. Tinta fresca é encontrada em suas roupas e mãos, mas o tipo de tinta não corresponde àquela usada no mural.\n*   **Michael Bronson:** Diz ter passado a noite jogando cartas em um clube local. Outros jogadores confirmam sua presença, mas notam que ele saiu por um período de tempo indeterminado. Ele parece tenso e irritado durante o interrogatório.\n*   **Ludmila Blackwood:** Afirma estar em uma reunião confidencial com seus \"sócios de negócios\" para discutir finanças. Ela se recusa a revelar a identidade dessas pessoas ou a natureza da reunião. Sua conta bancária mostra uma grande retirada no dia anterior ao assassinato.\n*   **Anton Petro:** Diz ter estado no escritório, trabalhando em um caso importante. Sua secretária confirma que ele estava lá até tarde, mas não consegue atestar o que ele fez depois que ela foi embora. Há uma mancha de sangue misteriosa em sua pasta.\n\n4.  **Segredos dos Suspeitos (Não Relacionados ao Crime):**\n\n*   **Sofia Darkwood:** Ela tem uma dívida de jogo secreta com Ludmila Blackwood e está sendo pressionada para pagar.\n*   **Viktor Kovalenko:** Ele está secretamente reunindo outros trabalhadores e ex-soldados para iniciar uma revolução contra a elite da cidade.\n*   **Artyom Dragovich:** Ele está enviando secretamente informações sobre as atividades ilegais de Ludmila Blackwood para a polícia.\n*   **Mila Redcat:** Ela está escondendo um fugitivo procurado por assassinato em sua oficina.\n*   **Katarina Darkwood:** Ela está se encontrando secretamente com Viktor Kovalenko e compartilhando seus ideais.\n*   **Michael Bronson:** Ele está sendo chantageado por Ludmila Blackwood para fazer \"favores\" ilegais para ela.\n*   **Ludmila Blackwood:** Ela está à beira da falência e está desesperada para manter sua influência e poder.\n*   **Anton Petro:** Ele está secretamente apaixonado por Katarina Darkwood e está tentando protegê-la de problemas.\n",
+    "Evidence": null,
+    "Culprit": {
+      "Caught": false,
+      "Name": "Mila Redcat",
+      "Description": "Pilota de rua e mecânica que cresceu idolatrando os trabalhadores que construíram os motores da cidade. Agora vasculha as mesmas fábricas por peças, montando veículos perigosos que rasgam a noite. Sua oficina serve de esconderijo para fugitivos.",
+      "Personality": "Rebelde, sarcástica, vive rápido para não pensar. Suas mãos estão sempre sujas de graxa, seu coração atrás de muros.",
+      "Id": "8",
+      "ImageCode": "female3",
+      "StressLevel": 0.0
+    },
+    "Motive": "Conflito sobre a venda da mansão",
+    "Weapon": "Faca de cozinha",
+    "Location": "Varanda"
+  },
+  "Chats": {},
+  "Objectives": [
+    {
+      "MainObjective": "Investigar a cena do crime e coletar pistas iniciais. (ID: 001)",
+      "Id": "f87d5fce-c671-4a10-aa4b-177a80ae422e",
+      "Completed": false
+    },
+    {
+      "MainObjective": "Interrogar todos os suspeitos sobre seus álibis. (ID: 002)",
+      "Id": "8028258c-5d69-41a1-b80a-de5e24505ad2",
+      "Completed": false
+    },
+    {
+      "MainObjective": "Descobrir a conexão da pena de corvo com os suspeitos. (ID: 003)",
+      "Id": "3b1f4462-ccb9-440b-b2d5-2e3a58797716",
+      "Completed": false
+    }
+  ],
+  "CreatedAt": "2025-11-22T12:47:58.4785431-03:00",
+  "Public": true,
+  "GameId": "01KAP40BCA8HQ646EXG66Z1HPM",
+  "ApiKey": "QUl6YVN5QXBGQkNUMGxJQ3Mzbms1VUM2SUFaajVrX0tBU3BqclJj"
+}

@@ -28,4 +28,7 @@ namespace InvestigaIA.Model.Utilities
             Sender = sender ?? string.Empty;
         }
     }
+
+    public record SendMessageRequest(string message, string chatId, string gameId, string sender);
+
 }

@@ -1,5 +1,6 @@
 using GenerativeAI.Types;
 using InvestigaIA.Model.Game;
+using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
 
@@ -10,15 +11,16 @@ namespace InvestigaIA.Model.Characters
 
     public class Suspect 
     {
-        public Suspect(string name, string description, string systemPrompt, string imageCode) 
+        public Suspect(string name, string description, string personality, string imageCode) 
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Description = description ?? throw new ArgumentNullException(nameof(description));
-            Personality = systemPrompt ?? throw new ArgumentNullException(nameof(systemPrompt));
+            Personality = personality ?? throw new ArgumentNullException(nameof(personality));
             ImageCode = imageCode ?? throw new ArgumentNullException(nameof(imageCode));
         }
 
-
+        [Newtonsoft.Json.JsonConstructor]
+        [System.Text.Json.Serialization.JsonConstructor]
         public Suspect()
         {
         }
@@ -27,20 +29,20 @@ namespace InvestigaIA.Model.Characters
         public string Description { get; set; }
         public string Personality { get; set; }
 
-        public int Id { get; set; }
+        public string Id { get; set; } 
         public string ImageCode { get; set; }
 
-        [JsonIgnore]
-        [JsonPropertyName("conversationHistory")]
+        [Newtonsoft.Json.JsonIgnore]
+        [JsonProperty("conversationHistory")]
         public List<Content> ConversationHistory { get; set; } = [];
 
-
+       
 
 
         public double StressLevel { get; set; } = 0.0d;
 
 
-
+      
 
       
     }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using InvestigaIA.API;
 using InvestigaIA.API.Gemini;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InvestigaIA.Model.Game
@@ -45,23 +46,34 @@ namespace InvestigaIA.Model.Game
         }
 
    
-        public async Task CreateGame()
+        public async Task CreateGame(string? apiKey = null)
         {
+            
+            apiKey ??= _provider.GetRequiredService<IConfiguration>().GetSection("APIKey").Value;
+
             var id = Ulid.NewUlid().ToString();
 
-           Games.Add(id, new GameInstance(_geminiService, id, _hubContext, _gameService));
+            var geminiService = new GeminiService(apiKey);
+
+            var game = new GameInstance(geminiService, id, _hubContext, _gameService, apiKey);
+
+           
+
+            Games.Add(id, game);
         }
 
-        internal List<ChatMessage> GetChat(string gameId, int chatId)
+        internal List<ChatMessage> GetChat(string gameId, string chatId)
         {
+            
+            
             if (Games.TryGetValue(gameId, out GameInstance? value))
             {
               
-                return value.Chats.TryGetValue(chatId, out var chat) ? chat : null;
+                return value.Chats.TryGetValue(chatId, out var chat) ? chat : new List<ChatMessage>(); ;
 
             }
 
-            return null;
+            throw new Exception($"No game with id {gameId} found.");
         }
     }
 }

@@ -2,12 +2,14 @@ using InvestigaIA.API;
 using InvestigaIA.API.Gemini;
 using InvestigaIA.Model.Case;
 using InvestigaIA.Model.Characters;
+using InvestigaIA.Model.DTOs;
 using InvestigaIA.Model.Utilities;
 // Removed Spectre.Console
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Text;
 
 
 
@@ -24,13 +26,14 @@ namespace InvestigaIA.Model.Game
 
         private bool disposedValue;
 
+        public readonly string key;
 
         public List<Suspect> Suspects { get; set; }
 
         public CaseFile CaseFile { get; set; }
 
 
-        public Dictionary<int, List<ChatMessage>> Chats { get; set; } = new();
+        public Dictionary<string, List<ChatMessage>> Chats { get; set; } = new();
 
 
         public List<Objective> Objectives { get; set; } = [new Objective { MainObjective = "Encontrar o assassino", Completed = false, Id = Guid.NewGuid() }];
@@ -42,7 +45,37 @@ namespace InvestigaIA.Model.Game
         private string GameId { get; set; }
 
 
-        public GameInstance(GeminiService service, string _gameId, IHubContext<GameHub> hubContext, GameService gameService)
+        public GameInstance(string _gameId, IHubContext<GameHub> hubContext, GameService gameService, GameInstanceJSON save)
+        {
+
+            key = save.ApiKey ?? throw new ArgumentNullException("API Key no found.");
+
+            _geminiService = new GeminiService(Encoding.UTF8.GetString(Convert.FromBase64String(save.ApiKey)));
+            _gameService = gameService;
+            _hubContext = hubContext;
+
+            GameId = save.GameId ?? _gameId;
+
+    
+            Suspects = save.Suspects ?? new List<Suspect>();
+            CaseFile = save.CaseFile ?? new CaseFile(Suspects);
+            if(save.CaseFile is null)
+            {
+                CaseFile.CrimeDetails = _gameService.CreateCaseStory(CaseFile, Suspects).Result;
+            }
+
+            
+
+            Chats = save.Chats ?? new Dictionary<string, List<ChatMessage>>();
+            Objectives = save.Objectives ?? new List<Objective>();
+
+            CreatedAt = save.CreatedAt;
+            Public = save.Public;
+        }
+
+
+
+        public GameInstance(GeminiService service, string _gameId, IHubContext<GameHub> hubContext, GameService gameService, string _key)
         {
 
 
@@ -57,6 +90,7 @@ namespace InvestigaIA.Model.Game
             Suspects = CharacterSet.suspects;
 
 
+            key = Convert.ToBase64String(Encoding.UTF8.GetBytes(_key));
 
 
             CaseFile = new CaseFile(Suspects);
@@ -119,6 +153,43 @@ namespace InvestigaIA.Model.Game
         }
 
 
+        public async Task Serialize()
+        {
+            var dto = new GameInstanceJSON
+            {
+                Suspects = this.Suspects,
+                CaseFile = this.CaseFile,
+                Chats = this.Chats,
+                Objectives = this.Objectives,
+                CreatedAt = this.CreatedAt,
+                Public = this.Public,
+                GameId = this.GameId,
+                ApiKey = this.key
+
+            };
+
+
+            string json = JsonConvert.SerializeObject(dto, Formatting.Indented);
+
+
+            Byte[] byteArray = System.Text.Encoding.UTF8.GetBytes(json);
+
+
+
+            if(!Directory.Exists("Saves"))
+            {
+                Directory.CreateDirectory("Saves");
+            }
+
+
+           var fs =  File.Create($"Saves/{GameId}.json");
+
+           await fs.WriteAsync(byteArray);
+
+            fs.Close();
+
+
+        }
 
 
         private string GenerateCharacterPrompt(Suspect suspect) =>
@@ -168,7 +239,13 @@ namespace InvestigaIA.Model.Game
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects)
+                    Chats.Clear(); 
+                    Suspects.Clear();
+                    Objectives.Clear();
+
+                    Chats = null!;
+                    Suspects = null!;
+                    Objectives = null!;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

@@ -1,14 +1,58 @@
 using InvestigaIA.API;
 using InvestigaIA.API.Gemini;
 using InvestigaIA.Model.Game;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System.Text;
 using webAPI.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddNewtonsoftJsonProtocol();
+
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+          
+            var accessToken = context.Request.Query["access_token"].ToString();
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/gamehub"))
+            {
+                
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
+    };
+
+
+
+});
+
 
 builder.Services.AddSingleton<GameManager>();
 builder.Services.AddSingleton<IServiceProvider, ServiceProvider>();
@@ -35,7 +79,8 @@ builder.Logging.AddConsole();
 builder.Services.AddSingleton<GameService>();
 
 builder.Services.AddHostedService<GameCleanUpService>();
-
+builder.Services.AddHostedService<GameAutoSave>();
+builder.Services.AddHostedService<GameAutoLoad>();
 builder.Services.AddSingleton(sp =>
 {
     var config = builder.Configuration;
@@ -112,18 +157,16 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 
 var app = builder.Build();
 
-// Apply middleware in the correct order
+
 app.UseRouting();
 
-// Apply CORS before any routing happens
 app.UseCors("CombinedPolicy");
 
-// Apply HTTPS redirection early in the pipeline
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
-// Development-specific middleware
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -131,7 +174,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// Map controllers and endpoints
+
 app.MapControllers();
 app.MapHub<GameHub>("/gamehub");
 

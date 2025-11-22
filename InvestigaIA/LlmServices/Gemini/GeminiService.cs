@@ -183,7 +183,8 @@ namespace InvestigaIA.API.Gemini
                 {
                     foreach(var obj in messageAnswer.NewObjectives)
                     {
-                      
+
+                        if (obj is null) continue;
 
 
                         if (!objectives.Select(o => o.MainObjective).Contains(obj.MainObjective))

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace InvestigaIA.Model.Characters
 {
-    public class Culprit(string nome, string description, string systemPrompt, string imageCode) : Suspect(nome, description, systemPrompt, imageCode)
+    public class Culprit(string name, string description, string personality, string imageCode) : Suspect(name, description, personality, imageCode)
     {
         [JsonInclude]
         public bool Caught = false;

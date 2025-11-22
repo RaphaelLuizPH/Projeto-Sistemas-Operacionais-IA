@@ -1,5 +1,6 @@
 // Models/CaseFile.cs
 using InvestigaIA.Model.Characters;
+using Newtonsoft.Json;
 using Spectre.Console;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,22 @@ namespace InvestigaIA.Model.Case
         public string Weapon { get; set; }
         public string Location { get; set; }
 
+
+        [System.Text.Json.Serialization.JsonConstructor]
+        [Newtonsoft.Json.JsonConstructor]
+        public CaseFile(string title, string crimeDetails, List<string> evidence, Culprit culprit, string motive, string weapon, string location, List<string> crimeWeapons, List<string> crimeMotives, List<string> locations)
+        {
+            Title = title;
+            CrimeDetails = crimeDetails;
+            Evidence = evidence;
+            Culprit = culprit;
+            Motive = motive;
+            Weapon = weapon;
+            Location = location;
+            CrimeWeapons = crimeWeapons;
+            this.crimeMotives = crimeMotives;
+            Locations = locations;
+        }
 
         public CaseFile(List<Suspect> suspects)
         {
